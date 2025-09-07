@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedBoxVM - Advanced Android Virtualization Platform</title>
+    <meta name="description"
+        content="Professional Android app virtualization and isolation platform with enterprise-grade security and performance.">
+    <meta name="keywords" content="Android virtualization, app cloning, mobile security, enterprise mobility, sandbox">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="assets/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/css/main.css" as="style">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+    <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="RedBoxVM - Advanced Android Virtualization Platform">
+    <meta property="og:description"
+        content="Professional Android app virtualization and isolation platform with enterprise-grade security and performance.">
+    <meta property="og:image" content="https://theredxstudio-git.github.io/RedBoxVM/assets/images/og-image.jpg">
+    <meta property="og:url" content="https://theredxstudio-git.github.io/RedBoxVM/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="RedBoxVM - Advanced Android Virtualization Platform">
+    <meta name="twitter:description"
+        content="Professional Android app virtualization and isolation platform with enterprise-grade security and performance.">
+    <meta name="twitter:image" content="https://theredxstudio-git.github.io/RedBoxVM/assets/images/og-image.jpg">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loader" class="loader">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <img src="assets/icons/favicon.svg" alt="RedBoxVM" class="loader-icon"
+                    style="width: 80px; height: 80px;" />
+            </div>
+            <div class="loader-text">
+                <h2 style="color: white;">RedBoxVM</h2>
+                <p style="color: white;">Loading virtualization platform...</p>
+            </div>
+            <div class="loader-progress">
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+        <div class="loader-particles"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="assets/icons/favicon.svg" alt="RedBoxVM" class="nav-logo"
+                    style="width: 48px; height: 48px;" />
+                <span class="nav-title" style="color: white;">RedBoxVM</span>
+            </div>
+
+            <div class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#architecture" class="nav-link">Architecture</a>
+                <a href="#docs" class="nav-link">Documentation</a>
+                <a href="#download" class="nav-link">Download</a>
+            </div>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                </button>
+                <a href="https://github.com/TheRedXStudio-Git/RedBoxVM" class="nav-github" target="_blank"
+                    rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                </a>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-background">
+                <div class="hero-gradient"></div>
+                <canvas id="hero-canvas" class="hero-canvas"></canvas>
+            </div>
+
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <span class="badge-text">Professional Android Virtualization</span>
+                    </div>
+
+                    <h1 class="hero-title">
+                        <span class="title-line">Advanced</span>
+                        <span class="title-line gradient-text">Virtualization</span>
+                        <span class="title-line">Platform</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        Enterprise-grade Android app virtualization with complete isolation,
+                        multi-instance support, and advanced security features. Run multiple
+                        app instances simultaneously in secure sandboxed environments.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#download" class="btn btn-primary">
+                            <span>Download SDK</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7,10 12,15 17,10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                        </a>
+                        <a href="#docs" class="btn btn-secondary">
+                            <span>Documentation</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14,2 14,8 20,8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                <polyline points="10,9 9,9 8,9" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <div class="stat-number">99.9%</div>
+                            <div class="stat-label">App Compatibility</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">∞</div>
+                            <div class="stat-label">Virtual Instances</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">0ms</div>
+                            <div class="stat-label">Launch Overhead</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="app-grid">
+                                <div class="app-icon app-1"></div>
+                                <div class="app-icon app-2"></div>
+                                <div class="app-icon app-3"></div>
+                                <div class="app-icon app-4"></div>
+                                <div class="app-icon app-5"></div>
+                                <div class="app-icon app-6"></div>
+                            </div>
+                        </div>
+                        <div class="phone-reflection"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-scroll">
+                <div class="scroll-indicator">
+                    <span>Scroll to explore</span>
+                    <div class="scroll-arrow"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-badge">Core Features</div>
+                    <h2 class="section-title">
+                        Enterprise-Grade
+                        <span class="gradient-text">Virtualization</span>
+                    </h2>
+                    <p class="section-description">
+                        Advanced Android virtualization technology with complete process isolation,
+                        system service virtualization, and enterprise security features.
+                    </p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card" data-feature="isolation">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <rect x="7" y="7" width="10" height="10" rx="1" ry="1" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Complete Isolation</h3>
+                        <p class="feature-description">
+                            True process isolation with dedicated virtual environments.
+                            Each app instance runs in its own sandboxed container.
+                        </p>
+                        <div class="feature-details">
+                            <ul>
+                                <li>Process-level sandboxing</li>
+                                <li>Memory protection</li>
+                                <li>File system isolation</li>
+                                <li>Network segregation</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-feature="performance">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12,6 12,12 16,14" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">High Performance</h3>
+                        <p class="feature-description">
+                            Optimized virtualization engine with minimal overhead.
+                            Native performance with intelligent resource management.
+                        </p>
+                        <div class="feature-details">
+                            <ul>
+                                <li>Zero-copy memory operations</li>
+                                <li>Intelligent resource allocation</li>
+                                <li>Performance monitoring</li>
+                                <li>Automatic optimization</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-feature="security">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <circle cx="12" cy="16" r="1" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Advanced Security</h3>
+                        <p class="feature-description">
+                            Multi-layer security architecture with encryption and access control.
+                            Enterprise-grade protection for sensitive applications.
+                        </p>
+                        <div class="feature-details">
+                            <ul>
+                                <li>AES-256 encryption</li>
+                                <li>Access control policies</li>
+                                <li>Audit logging</li>
+                                <li>Compliance ready</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-feature="compatibility">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                                <line x1="8" y1="21" x2="16" y2="21" />
+                                <line x1="12" y1="17" x2="12" y2="21" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Universal Compatibility</h3>
+                        <p class="feature-description">
+                            Support for Android 7.0+ with 99.9% app compatibility.
+                            Works on ARM64, ARM32, and x86 architectures.
+                        </p>
+                        <div class="feature-details">
+                            <ul>
+                                <li>Android 7.0+ support</li>
+                                <li>Multi-architecture support</li>
+                                <li>99.9% app compatibility</li>
+                                <li>No root required</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-feature="management">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Intelligent Management</h3>
+                        <p class="feature-description">
+                            Advanced instance management with real-time monitoring.
+                            Automated resource optimization and performance tuning.
+                        </p>
+                        <div class="feature-details">
+                            <ul>
+                                <li>Real-time monitoring</li>
+                                <li>Automated optimization</li>
+                                <li>Batch operations</li>
+                                <li>Performance analytics</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-feature="network">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="2" />
+                                <path
+                                    d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Network Virtualization</h3>
+                        <p class="feature-description">
+                            Complete network stack virtualization with VPN support.
+                            Isolated network interfaces for each virtual instance.
+                        </p>
+                        <div class="feature-details">
+                            <ul>
+                                <li>Virtual network interfaces</li>
+                                <li>VPN integration</li>
+                                <li>Traffic isolation</li>
+                                <li>Proxy support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Section -->
+        <section id="architecture" class="architecture">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-badge">System Architecture</div>
+                    <h2 class="section-title">
+                        Technical
+                        <span class="gradient-text">Architecture</span>
+                    </h2>
+                    <p class="section-description">
+                        Advanced multi-layer architecture with native performance optimization
+                        and enterprise-grade security features.
+                    </p>
+                </div>
+
+                <div class="architecture-diagram">
+                    <div class="arch-layer clickable-layer" data-layer="app" onclick="toggleLayerDetails('app')"
+                        style="cursor: pointer; padding: 20px; margin: 10px; border: 2px solid #667eea; border-radius: 12px; background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); transition: all 0.3s ease;">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="#667eea" style="margin-right: 10px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#667eea" stroke-width="2"
+                                    fill="none" />
+                                <rect x="7" y="7" width="10" height="4" fill="#667eea" />
+                                <rect x="7" y="13" width="6" height="2" fill="#667eea" />
+                            </svg>
+                            <h3 style="color: #667eea; margin: 0; font-size: 1.4em;">Application Layer</h3>
+                        </div>
+                        <div class="arch-components"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                RedBox UI</div>
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                App Manager</div>
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                Instance Manager</div>
+                        </div>
+                        <div id="app-details"
+                            style="display: none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                            <p style="margin: 0; color: #ccc;">User interface layer handling app selection, instance
+                                management, and user interactions. Provides intuitive controls for virtualization
+                                operations.</p>
+                        </div>
+                    </div>
+
+                    <div class="arch-layer clickable-layer" data-layer="core" onclick="toggleLayerDetails('core')"
+                        style="cursor: pointer; padding: 20px; margin: 10px; border: 2px solid #764ba2; border-radius: 12px; background: linear-gradient(135deg, rgba(118,75,162,0.1), rgba(102,126,234,0.1)); transition: all 0.3s ease;">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="#764ba2" style="margin-right: 10px;">
+                                <circle cx="12" cy="12" r="3" stroke="#764ba2" stroke-width="2" fill="none" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                                    stroke="#764ba2" stroke-width="1" fill="none" />
+                            </svg>
+                            <h3 style="color: #764ba2; margin: 0; font-size: 1.4em;">Core Engine</h3>
+                        </div>
+                        <div class="arch-components"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                Virtualization Layer</div>
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                System Hooks</div>
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                Process Manager</div>
+                        </div>
+                        <div id="core-details"
+                            style="display: none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                            <p style="margin: 0; color: #ccc;">Core virtualization engine responsible for creating
+                                isolated environments, managing system hooks, and coordinating virtual processes.</p>
+                        </div>
+                    </div>
+
+                    <div class="arch-layer clickable-layer" data-layer="native" onclick="toggleLayerDetails('native')"
+                        style="cursor: pointer; padding: 20px; margin: 10px; border: 2px solid #e74c3c; border-radius: 12px; background: linear-gradient(135deg, rgba(231,76,60,0.1), rgba(192,57,43,0.1)); transition: all 0.3s ease;">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="#e74c3c" style="margin-right: 10px;">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2" stroke="#e74c3c" stroke-width="2"
+                                    fill="none" />
+                                <polyline points="2,17 12,22 22,17" stroke="#e74c3c" stroke-width="2" fill="none" />
+                                <polyline points="2,12 12,17 22,12" stroke="#e74c3c" stroke-width="2" fill="none" />
+                            </svg>
+                            <h3 style="color: #e74c3c; margin: 0; font-size: 1.4em;">Native Layer (C++)</h3>
+                        </div>
+                        <div class="arch-components"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                Dobby Framework</div>
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                JNI Bridge</div>
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                System Call Interceptor</div>
+                        </div>
+                        <div id="native-details"
+                            style="display: none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                            <p style="margin: 0; color: #ccc;">Low-level native implementation providing system call
+                                interception, memory management, and hardware abstraction for optimal performance.</p>
+                        </div>
+                    </div>
+
+                    <div class="arch-layer clickable-layer" data-layer="virtual" onclick="toggleLayerDetails('virtual')"
+                        style="cursor: pointer; padding: 20px; margin: 10px; border: 2px solid #27ae60; border-radius: 12px; background: linear-gradient(135deg, rgba(39,174,96,0.1), rgba(46,204,113,0.1)); transition: all 0.3s ease;">
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="#27ae60" style="margin-right: 10px;">
+                                <rect x="3" y="3" width="7" height="7" rx="1" stroke="#27ae60" stroke-width="2"
+                                    fill="none" />
+                                <rect x="14" y="3" width="7" height="7" rx="1" stroke="#27ae60" stroke-width="2"
+                                    fill="none" />
+                                <rect x="3" y="14" width="7" height="7" rx="1" stroke="#27ae60" stroke-width="2"
+                                    fill="none" />
+                                <rect x="14" y="14" width="7" height="7" rx="1" stroke="#27ae60" stroke-width="2"
+                                    fill="none" />
+                            </svg>
+                            <h3 style="color: #27ae60; margin: 0; font-size: 1.4em;">Virtual Environments</h3>
+                        </div>
+                        <div class="arch-components"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                Virtual App 1</div>
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                Virtual App 2</div>
+                            <div class="arch-component"
+                                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; text-align: center; font-weight: 500;">
+                                Virtual App N</div>
+                        </div>
+                        <div id="virtual-details"
+                            style="display: none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                            <p style="margin: 0; color: #ccc;">Isolated sandbox environments where virtual app instances
+                                run independently with their own file systems, services, and resources.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    function toggleLayerDetails(layerId) {
+                        const details = document.getElementById(layerId + '-details');
+                        const layer = document.querySelector(`[data-layer="${layerId}"]`);
+
+                        if (details.style.display === 'none' || details.style.display === '') {
+                            details.style.display = 'block';
+                            layer.style.transform = 'scale(1.02)';
+                            layer.style.boxShadow = '0 8px 25px rgba(0,0,0,0.3)';
+                        } else {
+                            details.style.display = 'none';
+                            layer.style.transform = 'scale(1)';
+                            layer.style.boxShadow = 'none';
+                        }
+                    }
+
+                    // Add hover effects
+                    document.querySelectorAll('.clickable-layer').forEach(layer => {
+                        layer.addEventListener('mouseenter', function () {
+                            if (!this.querySelector('[id$="-details"]').style.display || this.querySelector('[id$="-details"]').style.display === 'none') {
+                                this.style.transform = 'scale(1.01)';
+                                this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+                            }
+                        });
+
+                        layer.addEventListener('mouseleave', function () {
+                            if (!this.querySelector('[id$="-details"]').style.display || this.querySelector('[id$="-details"]').style.display === 'none') {
+                                this.style.transform = 'scale(1)';
+                                this.style.boxShadow = 'none';
+                            }
+                        });
+                    });
+                </script>
+
+                <div class="architecture-features">
+                    <div class="arch-feature">
+                        <div class="arch-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                                <polyline points="2,17 12,22 22,17" />
+                                <polyline points="2,12 12,17 22,12" />
+                            </svg>
+                        </div>
+                        <h4>Multi-Layer Security</h4>
+                        <p>Five-layer security architecture with process isolation, system service virtualization, and
+                            hardware abstraction.</p>
+                    </div>
+
+                    <div class="arch-feature">
+                        <div class="arch-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="2" y1="12" x2="22" y2="12" />
+                                <path
+                                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                            </svg>
+                        </div>
+                        <h4>Global Compatibility</h4>
+                        <p>Support for ARM64, ARM32, x86_64, and x86 architectures with Android 7.0+ compatibility.</p>
+                    </div>
+
+                    <div class="arch-feature">
+                        <div class="arch-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
+                        </div>
+                        <h4>High Performance</h4>
+                        <p>Native C++ implementation with zero-copy operations and intelligent resource management.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation Section -->
+        <section id="docs" class="docs">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-badge">Developer Resources</div>
+                    <h2 class="section-title">
+                        Complete
+                        <span class="gradient-text">Documentation</span>
+                    </h2>
+                    <p class="section-description">
+                        Comprehensive guides, API references, and technical documentation
+                        for developers and system integrators.
+                    </p>
+                </div>
+
+                <div class="docs-grid">
+                    <div class="doc-card">
+                        <div class="doc-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                            </svg>
+                        </div>
+                        <h3>Getting Started</h3>
+                        <p>Quick start guide for developers new to RedBoxVM. Learn the basics and get your first virtual
+                            app running.</p>
+                        <a href="docs/getting-started.html" class="doc-link">
+                            Read Guide
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="7" y1="17" x2="17" y2="7" />
+                                <polyline points="7,7 17,7 17,17" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                                <polyline points="2,17 12,22 22,17" />
+                                <polyline points="2,12 12,17 22,12" />
+                            </svg>
+                        </div>
+                        <h3>Architecture Guide</h3>
+                        <p>Deep dive into RedBoxVM's technical architecture, virtualization engine, and security model.
+                        </p>
+                        <a href="docs/architecture.html" class="doc-link">
+                            Explore Architecture
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="7" y1="17" x2="17" y2="7" />
+                                <polyline points="7,7 17,7 17,17" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                        </div>
+                        <h3>API Reference</h3>
+                        <p>Complete API documentation with code examples, method signatures, and integration patterns.
+                        </p>
+                        <a href="docs/api-reference.html" class="doc-link">
+                            View API Docs
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="7" y1="17" x2="17" y2="7" />
+                                <polyline points="7,7 17,7 17,17" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <rect x="7" y="7" width="10" height="10" rx="1" ry="1" />
+                            </svg>
+                        </div>
+                        <h3>Security Guide</h3>
+                        <p>Security best practices, compliance guidelines, and enterprise deployment recommendations.
+                        </p>
+                        <a href="docs/security.html" class="doc-link">
+                            Security Docs
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="7" y1="17" x2="17" y2="7" />
+                                <polyline points="7,7 17,7 17,17" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6" />
+                                <polyline points="8 6 2 12 8 18" />
+                            </svg>
+                        </div>
+                        <h3>Code Examples</h3>
+                        <p>Practical code examples and sample implementations for common virtualization scenarios.</p>
+                        <a href="docs/examples.html" class="doc-link">
+                            Browse Examples
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="7" y1="17" x2="17" y2="7" />
+                                <polyline points="7,7 17,7 17,17" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                            </svg>
+                        </div>
+                        <h3>Build Guide</h3>
+                        <p>Complete build instructions, development setup, and deployment guidelines for all platforms.
+                        </p>
+                        <a href="docs/build-guide.html" class="doc-link">
+                            Build Instructions
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="7" y1="17" x2="17" y2="7" />
+                                <polyline points="7,7 17,7 17,17" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Download Section -->
+        <section id="download" class="download">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-badge">Get Started</div>
+                    <h2 class="section-title">
+                        Download
+                        <span class="gradient-text">RedBoxVM</span>
+                    </h2>
+                    <p class="section-description">
+                        Choose the right version for your needs. From personal use
+                        to enterprise deployment, we have you covered.
+                    </p>
+                </div>
+
+                <div class="download-options">
+                    <div class="download-card featured">
+                        <div class="download-badge">Recommended</div>
+                        <div class="download-header">
+                            <h3>RedBoxVM SDK</h3>
+                            <div class="download-version">v2.0.0</div>
+                        </div>
+                        <div class="download-description">
+                            Complete SDK with Core engine, documentation, and sample code.
+                            Perfect for developers and enterprise integration.
+                        </div>
+                        <div class="download-features">
+                            <div class="feature">✓ Complete SDK package</div>
+                            <div class="feature">✓ Core virtualization engine</div>
+                            <div class="feature">✓ Documentation & examples</div>
+                            <div class="feature">✓ Multi-architecture support</div>
+                            <div class="feature">✓ Enterprise licensing</div>
+                        </div>
+                        <div class="download-actions">
+                            <a href="https://github.com/TheRedXStudio-Git/RedBoxVM/releases/latest"
+                                class="btn btn-primary">
+                                <span>Download SDK</span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7,10 12,15 17,10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                            </a>
+                            <div class="download-size">~45 MB</div>
+                        </div>
+                    </div>
+
+                    <div class="download-card">
+                        <div class="download-header">
+                            <h3>Source Code</h3>
+                            <div class="download-version">Latest</div>
+                        </div>
+                        <div class="download-description">
+                            Full source code access for developers who want to customize
+                            and extend RedBoxVM functionality.
+                        </div>
+                        <div class="download-features">
+                            <div class="feature">✓ Complete source code</div>
+                            <div class="feature">✓ Build scripts & tools</div>
+                            <div class="feature">✓ Development documentation</div>
+                            <div class="feature">✓ Community support</div>
+                        </div>
+                        <div class="download-actions">
+                            <a href="https://github.com/TheRedXStudio-Git/RedBoxVM" class="btn btn-secondary">
+                                <span>View on GitHub</span>
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                                </svg>
+                            </a>
+                            <div class="download-size">Git Clone</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="system-requirements">
+                    <h3>System Requirements</h3>
+                    <div class="requirements-grid">
+                        <div class="requirement">
+                            <strong>Android Version:</strong>
+                            <span>7.0+ (API Level 24+)</span>
+                        </div>
+                        <div class="requirement">
+                            <strong>Architecture:</strong>
+                            <span>ARM64-v8a, armeabi-v7a, x86_64, x86</span>
+                        </div>
+                        <div class="requirement">
+                            <strong>RAM:</strong>
+                            <span>4GB minimum (8GB+ recommended)</span>
+                        </div>
+                        <div class="requirement">
+                            <strong>Storage:</strong>
+                            <span>2GB+ free space</span>
+                        </div>
+                        <div class="requirement">
+                            <strong>Root Access:</strong>
+                            <span>Not required</span>
+                        </div>
+                        <div class="requirement">
+                            <strong>Development:</strong>
+                            <span>Android Studio, NDK 29+, Java 17</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="assets/icons/favicon.svg" alt="RedBoxVM" class="footer-logo-icon"
+                            style="width: 40px; height: 40px;" />
+                        <div class="footer-brand-text">
+                            <h3 style="color: white;">RedBoxVM</h3>
+                            <p style="color: white;">Advanced Android Virtualization</p>
+                        </div>
+                    </div>
+                    <p class="footer-description">
+                        Professional Android app virtualization platform with enterprise-grade
+                        security and performance. Trusted by developers worldwide.
+                    </p>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Product</h4>
+                        <a href="#features">Features</a>
+                        <a href="#architecture">Architecture</a>
+                        <a href="#download">Download</a>
+                        <a href="docs/getting-started.html">Getting Started</a>
+                    </div>
+
+                    <div class="footer-section">
+                        <h4>Developers</h4>
+                        <a href="docs/api-reference.html">API Reference</a>
+                        <a href="docs/examples.html">Code Examples</a>
+                        <a href="docs/build-guide.html">Build Guide</a>
+                        <a href="https://github.com/TheRedXStudio-Git/RedBoxVM">GitHub</a>
+                    </div>
+
+                    <div class="footer-section">
+                        <h4>Resources</h4>
+                        <a href="docs/architecture.html">Documentation</a>
+                        <a href="docs/security.html">Security Guide</a>
+                        <a href="#support">Support</a>
+                        <a href="#licensing">Licensing</a>
+                    </div>
+
+                    <div class="footer-section">
+                        <h4>Company</h4>
+                        <a href="#about">About</a>
+                        <a href="#contact">Contact</a>
+                        <a href="#privacy">Privacy Policy</a>
+                        <a href="#terms">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 RedBox Project. All rights reserved.</p>
+                    <p>Proprietary and Confidential Software</p>
+                </div>
+
+                <div class="footer-social">
+                    <a href="https://github.com/TheRedXStudio-Git/RedBoxVM" target="_blank" rel="noopener">
+                        <img src="assets/icons/favicon.svg" alt="RedBoxVM" style="width: 24px; height: 24px;" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/animations.js"></script>
+    <script src="assets/js/3d-effects.js"></script>
+</body>
+
+</html>

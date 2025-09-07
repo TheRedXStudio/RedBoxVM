@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedBoxVM - Loading Documentation</title>
+    <meta name="description" content="RedBoxVM Documentation - Loading...">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+    <link rel="icon" type="image/png" href="../assets/icons/favicon.png">
+    
+    <style>
+        /* CSS Custom Properties */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --space-sm: 0.5rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --transition-normal: 0.3s ease-out;
+        }
+
+        /* Reset and Base Styles */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            font-size: 1rem;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
+        }
+
+        /* Loading Screen */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loader-logo {
+            margin-bottom: var(--space-lg);
+        }
+
+        .loader-icon {
+            width: 80px;
+            height: 80px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .loader-text h2 {
+            font-size: 2rem;
+            margin-bottom: var(--space-sm);
+            font-weight: 700;
+        }
+
+        .loader-text p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: var(--space-xl);
+        }
+
+        .loader-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .loader-bar {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            animation: loading 2s ease-in-out infinite;
+        }
+
+        .loader-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                opacity: 1; 
+            }
+            50% { 
+                transform: scale(1.1); 
+                opacity: 0.8; 
+            }
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        /* Dark theme support */
+        @media (prefers-color-scheme: dark) {
+            .loader {
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loader" class="loader">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <img src="../assets/icons/favicon.svg" alt="RedBoxVM" class="loader-icon" />
+            </div>
+            <div class="loader-text">
+                <h2>RedBoxVM</h2>
+                <p>Loading documentation platform...</p>
+            </div>
+            <div class="loader-progress">
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+        <div class="loader-particles"></div>
+    </div>
+
+    <script>
+        class DocsLoader {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.setupLoader();
+            }
+
+            setupLoader() {
+                const loader = document.getElementById('loader');
+                const loaderBar = document.querySelector('.loader-bar');
+                let progress = 0;
+
+                // Simulate loading progress
+                const loadingInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(loadingInterval);
+                        
+                        // Hide loader and redirect to main index
+                        setTimeout(() => {
+                            loader.classList.add('hidden');
+                            
+                            // Redirect to main index.html after loader animation
+                            setTimeout(() => {
+                                window.location.href = '../index.html';
+                            }, 500);
+                        }, 500);
+                    }
+                    
+                    if (loaderBar) {
+                        loaderBar.style.width = `${progress}%`;
+                    }
+                }, 100);
+
+                // Ensure redirect happens after maximum time (fallback)
+                setTimeout(() => {
+                    if (!loader.classList.contains('hidden')) {
+                        loader.classList.add('hidden');
+                        setTimeout(() => {
+                            window.location.href = '../index.html';
+                        }, 500);
+                    }
+                }, 3000);
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new DocsLoader();
+        });
+
+        // Fallback initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                new DocsLoader();
+            });
+        } else {
+            new DocsLoader();
+        }
+    </script>
+</body>
+
+</html>

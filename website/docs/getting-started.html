@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - RedBoxVM Documentation</title>
+    <meta name="description" content="Get started with RedBoxVM - Android app virtualization platform. Installation guide, setup instructions, and first steps.">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/docs.css">
+    <link rel="stylesheet" href="../assets/css/animations.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+    
+    <!-- Mermaid for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../assets/icons/favicon.svg" alt="RedBoxVM" class="nav-logo" style="width: 48px; height: 48px;" />
+                <span class="nav-title" style="color: white;">RedBoxVM</span>
+            </div>
+
+            <div class="nav-menu" id="nav-menu">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="../index.html#features" class="nav-link">Features</a>
+                <a href="../index.html#architecture" class="nav-link">Architecture</a>
+                <a href="getting-started.html" class="nav-link active">Documentation</a>
+                <a href="../index.html#download" class="nav-link">Download</a>
+            </div>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                </button>
+                <a href="https://github.com/TheRedXStudio-Git/RedBoxVM" class="nav-github" target="_blank" rel="noopener">
+                    <img src="../assets/icons/favicon.svg" alt="RedBoxVM" style="width: 24px; height: 24px;" />
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Documentation Container -->
+    <div class="docs-container">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3 class="docs-nav-title">Documentation</h3>
+            <nav class="docs-nav">
+                <ul>
+                    <li class="docs-nav-item">
+                        <a href="getting-started.html" class="docs-nav-link active">Getting Started</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="architecture.html" class="docs-nav-link">Architecture</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="api-reference.html" class="docs-nav-link">API Reference</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="security.html" class="docs-nav-link">Security Guide</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="build-guide.html" class="docs-nav-link">Build Guide</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="examples.html" class="docs-nav-link">Examples</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="docs-breadcrumb-separator">/</span>
+                <a href="getting-started.html">Documentation</a>
+                <span class="docs-breadcrumb-separator">/</span>
+                <span>Getting Started</span>
+            </div>
+
+            <h1>Getting Started with RedBoxVM</h1>
+            
+            <p>Welcome to RedBoxVM, the advanced Android app virtualization platform. This guide will help you get started with installation, setup, and your first virtual app instance.</p>
+
+            <div class="alert alert-info">
+                <strong>Prerequisites:</strong> Android 7.0+ (API level 24), 2GB+ RAM, 1GB+ storage space
+            </div>
+
+            <h2>Installation Process</h2>
+            
+            <p>RedBoxVM installation follows a streamlined process designed for both developers and end users.</p>
+
+            <div class="mermaid">
+flowchart TD
+    A[Download RedBoxVM APK] --> B{Device Compatible?}
+    B -->|Yes| C[Enable Unknown Sources]
+    B -->|No| D[Check Requirements]
+    D --> E[Upgrade Android Version]
+    E --> B
+    
+    C --> F[Install RedBoxVM]
+    F --> G[Grant Permissions]
+    G --> H[Initialize Core Engine]
+    H --> I[Setup Complete]
+    
+    I --> J[Launch RedBoxVM]
+    J --> K[Select App to Clone]
+    K --> L[Create Virtual Instance]
+    L --> M[Virtual App Ready]
+            </div>
+
+            <h3>Step 1: Download and Install</h3>
+            
+            <ol>
+                <li><strong>Download the APK:</strong> Get the latest RedBoxVM APK from our official releases</li>
+                <li><strong>Enable Unknown Sources:</strong> Go to Settings > Security > Unknown Sources</li>
+                <li><strong>Install the APK:</strong> Tap the downloaded file and follow installation prompts</li>
+            </ol>
+
+            <pre><code># Download via command line (optional)
+wget https://github.com/TheRedXStudio-Git/RedBoxVM/releases/latest/download/redboxvm.apk
+
+# Install via ADB (for developers)
+adb install redboxvm.apk</code></pre>
+
+            <h3>Step 2: Initial Setup</h3>
+            
+            <p>When you first launch RedBoxVM, the Core engine will initialize automatically:</p>
+
+            <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant RedBoxUI
+    participant Core
+    participant System
+    
+    User->>RedBoxUI: Launch RedBoxVM
+    RedBoxUI->>Core: Initialize Engine
+    Core->>System: Hook System Services
+    System->>Core: Services Hooked
+    Core->>RedBoxUI: Engine Ready
+    RedBoxUI->>User: Show Main Interface
+            </div>
+
+            <h3>Step 3: Create Your First Virtual App</h3>
+            
+            <ol>
+                <li><strong>Select an App:</strong> Choose from your installed apps</li>
+                <li><strong>Configure Settings:</strong> Set up isolation preferences</li>
+                <li><strong>Create Instance:</strong> RedBoxVM will create the virtual environment</li>
+                <li><strong>Launch Virtual App:</strong> Your cloned app is ready to use</li>
+            </ol>
+
+            <h2>System Requirements</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Minimum</th>
+                        <th>Recommended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Android Version</td>
+                        <td>7.0 (API 24)</td>
+                        <td>10.0+ (API 29)</td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td>2GB</td>
+                        <td>4GB+</td>
+                    </tr>
+                    <tr>
+                        <td>Storage</td>
+                        <td>1GB free</td>
+                        <td>2GB+ free</td>
+                    </tr>
+                    <tr>
+                        <td>Architecture</td>
+                        <td>ARM64, ARM32</td>
+                        <td>ARM64</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Architecture Overview</h2>
+            
+            <p>Understanding RedBoxVM's architecture helps you make the most of its capabilities:</p>
+
+            <div class="mermaid">
+graph TB
+    subgraph "RedBoxVM Architecture"
+        subgraph "Application Layer"
+            UI[RedBox UI]
+            AM[App Manager]
+            IM[Instance Manager]
+        end
+        
+        subgraph "Core Engine"
+            VL[Virtualization Layer]
+            SH[System Hooks]
+            PM[Process Manager]
+        end
+        
+        subgraph "Native Layer"
+            DF[Dobby Framework]
+            JB[JNI Bridge]
+            SC[System Call Interceptor]
+        end
+    end
+    
+    subgraph "Virtual Environments"
+        VE1[Virtual App 1]
+        VE2[Virtual App 2]
+        VEN[Virtual App N]
+    end
+    
+    UI --> AM
+    AM --> IM
+    IM --> VL
+    VL --> SH
+    SH --> PM
+    PM --> DF
+    DF --> JB
+    JB --> SC
+    
+    VL --> VE1
+    VL --> VE2
+    VL --> VEN
+            </div>
+
+            <h2>Quick Start Commands</h2>
+            
+            <p>For developers working with RedBoxVM programmatically:</p>
+
+            <pre><code>// Initialize RedBoxVM
+RedBoxManager manager = RedBoxManager.getInstance();
+manager.initialize(context);
+
+// Create virtual environment
+VirtualEnvironment env = manager.createEnvironment("com.example.app");
+
+// Launch virtual app
+manager.launchApp(env, "com.example.app");
+
+// Monitor virtual app
+manager.setAppListener(new AppListener() {
+    @Override
+    public void onAppStarted(String packageName) {
+        Log.d("RedBox", "Virtual app started: " + packageName);
+    }
+});</code></pre>
+
+            <h2>Troubleshooting</h2>
+            
+            <h3>Common Issues</h3>
+            
+            <div class="alert alert-warning">
+                <strong>Installation Failed:</strong> Ensure you have enabled "Unknown Sources" and have sufficient storage space.
+            </div>
+
+            <div class="alert alert-danger">
+                <strong>App Won't Start:</strong> Check that your device meets the minimum requirements and restart RedBoxVM.
+            </div>
+
+            <div class="alert alert-success">
+                <strong>Performance Tips:</strong> Close unnecessary background apps and ensure you have at least 1GB free RAM.
+            </div>
+
+            <h3>Getting Help</h3>
+            
+            <ul>
+                <li><strong>Documentation:</strong> Check our comprehensive guides</li>
+                <li><strong>GitHub Issues:</strong> Report bugs and request features</li>
+                <li><strong>Community:</strong> Join our developer community</li>
+            </ul>
+
+            <!-- Navigation -->
+            <div class="docs-navigation">
+                <a href="../index.html" class="docs-nav-btn">
+                    ← Back to Home
+                </a>
+                <a href="architecture.html" class="docs-nav-btn">
+                    Architecture Guide →
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/docs.js"></script>
+</body>
+
+</html>

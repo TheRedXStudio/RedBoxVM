@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - RedBoxVM Documentation</title>
+    <meta name="description" content="Complete API documentation with code examples, method signatures, and integration patterns for RedBoxVM.">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/docs.css">
+    <link rel="stylesheet" href="../assets/css/animations.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+    
+    <!-- Mermaid for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../assets/icons/favicon.svg" alt="RedBoxVM" class="nav-logo" style="width: 48px; height: 48px;" />
+                <span class="nav-title" style="color: white;">RedBoxVM</span>
+            </div>
+
+            <div class="nav-menu" id="nav-menu">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="../index.html#features" class="nav-link">Features</a>
+                <a href="../index.html#architecture" class="nav-link">Architecture</a>
+                <a href="getting-started.html" class="nav-link active">Documentation</a>
+                <a href="../index.html#download" class="nav-link">Download</a>
+            </div>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                </button>
+                <a href="https://github.com/TheRedXStudio-Git/RedBoxVM" class="nav-github" target="_blank" rel="noopener">
+                    <img src="../assets/icons/favicon.svg" alt="RedBoxVM" style="width: 24px; height: 24px;" />
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Documentation Container -->
+    <div class="docs-container">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3 class="docs-nav-title">Documentation</h3>
+            <nav class="docs-nav">
+                <ul>
+                    <li class="docs-nav-item">
+                        <a href="getting-started.html" class="docs-nav-link">Getting Started</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="architecture.html" class="docs-nav-link">Architecture</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="api-reference.html" class="docs-nav-link active">API Reference</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="security.html" class="docs-nav-link">Security Guide</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="build-guide.html" class="docs-nav-link">Build Guide</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="examples.html" class="docs-nav-link">Examples</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="docs-breadcrumb-separator">/</span>
+                <a href="getting-started.html">Documentation</a>
+                <span class="docs-breadcrumb-separator">/</span>
+                <span>API Reference</span>
+            </div>
+
+            <h1>RedBoxVM API Reference</h1>
+            
+            <p>Complete API documentation for integrating RedBoxVM into your applications. This reference covers all public APIs, interfaces, and integration patterns.</p>
+
+            <div class="alert alert-info">
+                <strong>SDK Version:</strong> This documentation covers RedBoxVM SDK v2.1.0 and later.
+            </div>
+
+            <h2>Core Classes</h2>
+
+            <h3>RedBoxManager</h3>
+            
+            <p>The main entry point for all RedBoxVM operations.</p>
+
+            <pre><code>public class RedBoxManager {
+    // Singleton instance
+    public static RedBoxManager getInstance()
+    
+    // Initialize the virtualization engine
+    public void initialize(Context context)
+    
+    // Create a new virtual environment
+    public VirtualEnvironment createEnvironment(String packageName)
+    
+    // Launch an app in virtual environment
+    public boolean launchApp(VirtualEnvironment env, String packageName)
+    
+    // Get all virtual environments
+    public List&lt;VirtualEnvironment&gt; getEnvironments()
+    
+    // Destroy a virtual environment
+    public void destroyEnvironment(VirtualEnvironment env)
+}</code></pre>
+
+            <h4>Usage Example</h4>
+
+            <pre><code>// Initialize RedBoxVM
+RedBoxManager manager = RedBoxManager.getInstance();
+manager.initialize(this);
+
+// Create virtual environment for WhatsApp
+VirtualEnvironment whatsappEnv = manager.createEnvironment("com.whatsapp");
+
+// Launch WhatsApp in virtual environment
+boolean success = manager.launchApp(whatsappEnv, "com.whatsapp");
+
+if (success) {
+    Log.d("RedBox", "WhatsApp launched successfully in virtual environment");
+}</code></pre>
+
+            <h3>VirtualEnvironment</h3>
+            
+            <p>Represents an isolated virtual environment for running apps.</p>
+
+            <pre><code>public class VirtualEnvironment {
+    // Get environment ID
+    public String getId()
+    
+    // Get associated package name
+    public String getPackageName()
+    
+    // Check if environment is active
+    public boolean isActive()
+    
+    // Get environment configuration
+    public EnvironmentConfig getConfig()
+    
+    // Set environment configuration
+    public void setConfig(EnvironmentConfig config)
+    
+    // Get virtual file system path
+    public String getVirtualPath()
+    
+    // Get running processes in this environment
+    public List&lt;ProcessInfo&gt; getProcesses()
+}</code></pre>
+
+            <h3>EnvironmentConfig</h3>
+            
+            <p>Configuration options for virtual environments.</p>
+
+            <pre><code>public class EnvironmentConfig {
+    // Network isolation settings
+    public boolean networkIsolation = true;
+    
+    // File system isolation
+    public boolean fileSystemIsolation = true;
+    
+    // Custom storage path
+    public String customStoragePath = null;
+    
+    // Memory limit (MB)
+    public int memoryLimit = 512;
+    
+    // Enable debugging
+    public boolean debugMode = false;
+    
+    // VPN configuration
+    public VpnConfig vpnConfig = null;
+}</code></pre>
+
+            <h2>Event Listeners</h2>
+
+            <h3>AppListener</h3>
+            
+            <p>Listen to virtual app lifecycle events.</p>
+
+            <pre><code>public interface AppListener {
+    void onAppStarted(String packageName, VirtualEnvironment env);
+    void onAppStopped(String packageName, VirtualEnvironment env);
+    void onAppCrashed(String packageName, VirtualEnvironment env, Exception error);
+    void onEnvironmentCreated(VirtualEnvironment env);
+    void onEnvironmentDestroyed(VirtualEnvironment env);
+}</code></pre>
+
+            <h4>Implementation Example</h4>
+
+            <pre><code>manager.setAppListener(new AppListener() {
+    @Override
+    public void onAppStarted(String packageName, VirtualEnvironment env) {
+        Log.d("RedBox", "App started: " + packageName + " in env: " + env.getId());
+        // Update UI, send analytics, etc.
+    }
+    
+    @Override
+    public void onAppCrashed(String packageName, VirtualEnvironment env, Exception error) {
+        Log.e("RedBox", "App crashed: " + packageName, error);
+        // Handle crash, show error dialog, etc.
+    }
+    
+    // ... implement other methods
+});</code></pre>
+
+            <h2>API Flow Diagram</h2>
+            
+            <p>Understanding the typical API usage flow:</p>
+
+            <div class="mermaid">
+sequenceDiagram
+    participant App as Your App
+    participant Manager as RedBoxManager
+    participant Env as VirtualEnvironment
+    participant Core as Core Engine
+    
+    App->>Manager: getInstance()
+    App->>Manager: initialize(context)
+    Manager->>Core: Initialize Engine
+    
+    App->>Manager: createEnvironment(packageName)
+    Manager->>Core: Create Virtual Environment
+    Core->>Env: New Environment Created
+    Manager->>App: Return VirtualEnvironment
+    
+    App->>Manager: launchApp(env, packageName)
+    Manager->>Core: Launch App in Environment
+    Core->>Env: Start Virtual App Process
+    Env->>Manager: App Started Event
+    Manager->>App: onAppStarted() callback
+            </div>
+
+            <h2>Advanced APIs</h2>
+
+            <h3>ProcessManager</h3>
+            
+            <p>Advanced process management within virtual environments.</p>
+
+            <pre><code>public class ProcessManager {
+    // Get process manager instance
+    public static ProcessManager getInstance()
+    
+    // Kill a specific process
+    public boolean killProcess(VirtualEnvironment env, int pid)
+    
+    // Get process information
+    public ProcessInfo getProcessInfo(VirtualEnvironment env, int pid)
+    
+    // Monitor process resource usage
+    public void startResourceMonitoring(VirtualEnvironment env, ResourceListener listener)
+    
+    // Set process priority
+    public void setProcessPriority(VirtualEnvironment env, int pid, int priority)
+}</code></pre>
+
+            <h3>FileSystemManager</h3>
+            
+            <p>Virtual file system operations.</p>
+
+            <pre><code>public class FileSystemManager {
+    // Copy file between environments
+    public boolean copyFile(VirtualEnvironment source, VirtualEnvironment dest, String path)
+    
+    // Get virtual file system usage
+    public StorageInfo getStorageInfo(VirtualEnvironment env)
+    
+    // Clean up temporary files
+    public void cleanupTempFiles(VirtualEnvironment env)
+    
+    // Export environment data
+    public boolean exportEnvironment(VirtualEnvironment env, String exportPath)
+    
+    // Import environment data
+    public VirtualEnvironment importEnvironment(String importPath)
+}</code></pre>
+
+            <h2>Error Handling</h2>
+
+            <h3>Exception Types</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Exception</th>
+                        <th>Description</th>
+                        <th>Common Causes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>VirtualizationException</td>
+                        <td>General virtualization error</td>
+                        <td>Engine not initialized, insufficient permissions</td>
+                    </tr>
+                    <tr>
+                        <td>EnvironmentException</td>
+                        <td>Virtual environment error</td>
+                        <td>Environment not found, already destroyed</td>
+                    </tr>
+                    <tr>
+                        <td>AppLaunchException</td>
+                        <td>App launch failure</td>
+                        <td>App not installed, incompatible app</td>
+                    </tr>
+                    <tr>
+                        <td>ResourceException</td>
+                        <td>Resource allocation error</td>
+                        <td>Insufficient memory, storage full</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Error Handling Example</h3>
+
+            <pre><code>try {
+    VirtualEnvironment env = manager.createEnvironment("com.example.app");
+    boolean success = manager.launchApp(env, "com.example.app");
+    
+    if (!success) {
+        throw new AppLaunchException("Failed to launch app");
+    }
+    
+} catch (VirtualizationException e) {
+    Log.e("RedBox", "Virtualization error", e);
+    // Show user-friendly error message
+    showErrorDialog("Virtualization failed: " + e.getMessage());
+    
+} catch (AppLaunchException e) {
+    Log.e("RedBox", "App launch error", e);
+    // Handle app-specific launch issues
+    handleAppLaunchError(e);
+    
+} catch (Exception e) {
+    Log.e("RedBox", "Unexpected error", e);
+    // Handle unexpected errors
+    crashlytics.recordException(e);
+}</code></pre>
+
+            <h2>Configuration Options</h2>
+
+            <h3>Global Configuration</h3>
+
+            <pre><code>public class RedBoxConfig {
+    // Maximum number of concurrent virtual environments
+    public static final int MAX_ENVIRONMENTS = 10;
+    
+    // Default memory limit per environment (MB)
+    public static final int DEFAULT_MEMORY_LIMIT = 512;
+    
+    // Enable performance monitoring
+    public boolean performanceMonitoring = false;
+    
+    // Log level
+    public LogLevel logLevel = LogLevel.INFO;
+    
+    // Custom hook configurations
+    public Map&lt;String, HookConfig&gt; customHooks = new HashMap&lt;&gt;();
+}</code></pre>
+
+            <h3>Network Configuration</h3>
+
+            <pre><code>public class NetworkConfig {
+    // Enable network isolation
+    public boolean isolateNetwork = true;
+    
+    // Custom DNS servers
+    public List&lt;String&gt; dnsServers = Arrays.asList("8.8.8.8", "8.8.4.4");
+    
+    // Proxy configuration
+    public ProxyConfig proxyConfig = null;
+    
+    // VPN integration
+    public boolean enableVpnIntegration = false;
+    
+    // Network monitoring
+    public boolean monitorNetworkTraffic = false;
+}</code></pre>
+
+            <h2>Performance Monitoring</h2>
+
+            <h3>ResourceMonitor</h3>
+
+            <pre><code>public class ResourceMonitor {
+    // Start monitoring resources
+    public void startMonitoring(VirtualEnvironment env, ResourceListener listener)
+    
+    // Get current resource usage
+    public ResourceUsage getCurrentUsage(VirtualEnvironment env)
+    
+    // Get historical resource data
+    public List&lt;ResourceUsage&gt; getHistoricalData(VirtualEnvironment env, long timeRange)
+    
+    // Set resource limits
+    public void setResourceLimits(VirtualEnvironment env, ResourceLimits limits)
+}</code></pre>
+
+            <h3>ResourceUsage Data Structure</h3>
+
+            <pre><code>public class ResourceUsage {
+    public long timestamp;
+    public int memoryUsageMB;
+    public float cpuUsagePercent;
+    public long networkBytesIn;
+    public long networkBytesOut;
+    public long storageUsedMB;
+    public int activeProcesses;
+}</code></pre>
+
+            <h2>Integration Patterns</h2>
+
+            <h3>Singleton Pattern</h3>
+
+            <pre><code>public class MyRedBoxIntegration {
+    private static MyRedBoxIntegration instance;
+    private RedBoxManager redBoxManager;
+    
+    private MyRedBoxIntegration() {
+        redBoxManager = RedBoxManager.getInstance();
+    }
+    
+    public static MyRedBoxIntegration getInstance() {
+        if (instance == null) {
+            synchronized (MyRedBoxIntegration.class) {
+                if (instance == null) {
+                    instance = new MyRedBoxIntegration();
+                }
+            }
+        }
+        return instance;
+    }
+}</code></pre>
+
+            <h3>Observer Pattern</h3>
+
+            <pre><code>public class VirtualAppObserver implements AppListener {
+    private List&lt;VirtualAppCallback&gt; callbacks = new ArrayList&lt;&gt;();
+    
+    public void addCallback(VirtualAppCallback callback) {
+        callbacks.add(callback);
+    }
+    
+    @Override
+    public void onAppStarted(String packageName, VirtualEnvironment env) {
+        for (VirtualAppCallback callback : callbacks) {
+            callback.onVirtualAppEvent(packageName, env, "STARTED");
+        }
+    }
+}</code></pre>
+
+            <div class="alert alert-warning">
+                <strong>Thread Safety:</strong> All RedBoxVM APIs are thread-safe, but it's recommended to perform operations on background threads to avoid blocking the UI.
+            </div>
+
+            <!-- Navigation -->
+            <div class="docs-navigation">
+                <a href="architecture.html" class="docs-nav-btn">
+                    ← Architecture Guide
+                </a>
+                <a href="security.html" class="docs-nav-btn">
+                    Security Guide →
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/docs.js"></script>
+</body>
+
+</html>

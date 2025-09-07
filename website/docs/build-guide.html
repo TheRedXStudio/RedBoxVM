@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Guide - RedBoxVM Documentation</title>
+    <meta name="description"
+        content="Complete build guide for RedBoxVM including development setup, compilation instructions, and deployment.">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/docs.css">
+    <link rel="stylesheet" href="../assets/css/animations.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+
+    <!-- Mermaid for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../assets/icons/favicon.svg" alt="RedBoxVM" class="nav-logo"
+                    style="width: 48px; height: 48px;" />
+                <span class="nav-title" style="color: white;">RedBoxVM</span>
+            </div>
+
+            <div class="nav-menu" id="nav-menu">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="../index.html#features" class="nav-link">Features</a>
+                <a href="../index.html#architecture" class="nav-link">Architecture</a>
+                <a href="getting-started.html" class="nav-link active">Documentation</a>
+                <a href="../index.html#download" class="nav-link">Download</a>
+            </div>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                </button>
+                <a href="https://github.com/TheRedXStudio-Git/RedBoxVM" class="nav-github" target="_blank"
+                    rel="noopener">
+                    <img src="../assets/icons/favicon.svg" alt="RedBoxVM" style="width: 24px; height: 24px;" />
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Documentation Container -->
+    <div class="docs-container">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3 class="docs-nav-title">Documentation</h3>
+            <nav class="docs-nav">
+                <ul>
+                    <li class="docs-nav-item">
+                        <a href="getting-started.html" class="docs-nav-link">Getting Started</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="architecture.html" class="docs-nav-link">Architecture</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="api-reference.html" class="docs-nav-link">API Reference</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="security.html" class="docs-nav-link">Security Guide</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="build-guide.html" class="docs-nav-link active">Build Guide</a>
+                    </li>
+                    <li class="docs-nav-item">
+                        <a href="examples.html" class="docs-nav-link">Examples</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="../index.html">Home</a>
+                <span class="docs-breadcrumb-separator">/</span>
+                <a href="getting-started.html">Documentation</a>
+                <span class="docs-breadcrumb-separator">/</span>
+                <span>Build Guide</span>
+            </div>
+
+            <h1>RedBoxVM Build Guide</h1>
+
+            <p>This comprehensive guide covers building RedBoxVM from source, including development environment setup,
+                compilation process, and deployment procedures.</p>
+
+            <div class="alert alert-info">
+                <strong>Prerequisites:</strong> This guide assumes familiarity with Android development, Gradle build
+                system, and C++ compilation.
+            </div>
+
+            <h2>Development Environment Setup</h2>
+
+            <h3>Required Tools and Dependencies</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Version</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Android Studio</td>
+                        <td>2023.1.1+</td>
+                        <td>IDE and Android SDK</td>
+                    </tr>
+                    <tr>
+                        <td>Android SDK</td>
+                        <td>API 35</td>
+                        <td>Android development platform</td>
+                    </tr>
+                    <tr>
+                        <td>Android NDK</td>
+                        <td>29.0.13846066</td>
+                        <td>Native C++ compilation</td>
+                    </tr>
+                    <tr>
+                        <td>Java JDK</td>
+                        <td>17</td>
+                        <td>Java compilation</td>
+                    </tr>
+                    <tr>
+                        <td>Gradle</td>
+                        <td>8.5+</td>
+                        <td>Build automation</td>
+                    </tr>
+                    <tr>
+                        <td>CMake</td>
+                        <td>3.22.1+</td>
+                        <td>Native build system</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Environment Setup Steps</h3>
+
+            <div class="mermaid">
+                flowchart TD
+                A[Install Android Studio] --> B[Download Android SDK API 35]
+                B --> C[Install Android NDK 29]
+                C --> D[Install Java JDK 17]
+                D --> E[Configure Environment Variables]
+                E --> F[Clone RedBoxVM Repository]
+                F --> G[Setup Complete]
+
+                G --> H[Verify Installation]
+                H --> I{All Tools Available?}
+                I -->|Yes| J[Ready to Build]
+                I -->|No| K[Fix Missing Dependencies]
+                K --> H
+            </div>
+
+            <h3>Environment Variables</h3>
+
+            <pre><code># Add to ~/.bashrc or ~/.zshrc (Linux/macOS)
+export ANDROID_HOME=$HOME/Android/Sdk
+export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/29.0.13846066
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
+
+# Windows (PowerShell)
+$env:ANDROID_HOME = "C:\Users\$env:USERNAME\AppData\Local\Android\Sdk"
+$env:ANDROID_NDK_HOME = "$env:ANDROID_HOME\ndk\29.0.13846066"
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-17"</code></pre>
+
+            <h2>Project Structure</h2>
+
+            <p>Understanding the RedBoxVM project structure is essential for successful building:</p>
+
+            <pre><code>RedBoxVM/
+├── app/                          # Main Android application
+│   ├── src/main/
+│   │   ├── java/com/redbox/      # Java source code
+│   │   ├── res/                  # Android resources
+│   │   └── AndroidManifest.xml   # App manifest
+│   └── build.gradle              # App build configuration
+├── Core/                        # Core virtualization library
+│   ├── src/main/
+│   │   ├── aidl/                 # AIDL interfaces
+│   │   ├── assets/               # Runtime assets
+│   │   ├── cpp/                  # Native C++ code
+│   │   │   ├── Dobby/            # Hook framework
+│   │   │   ├── Hook/             # System hooks
+│   │   │   ├── JniHook/          # JNI bridge
+│   │   │   └── Utils/            # Utilities
+│   │   ├── java/                 # Java wrapper code
+│   │   └── res/                  # Library resources
+│   ├── CMakeLists.txt            # Native build configuration
+│   └── build.gradle              # Library build configuration
+├── build.gradle                  # Root build configuration
+├── settings.gradle               # Project settings
+├── gradle.properties             # Build properties
+└── gradle/                       # Gradle wrapper</code></pre>
+
+            <h2>Build Process Overview</h2>
+
+            <p>The RedBoxVM build process involves multiple stages:</p>
+
+            <div class="mermaid">
+                graph LR
+                subgraph "Build Pipeline"
+                A[Source Code] --> B[Java Compilation]
+                A --> C[Native Compilation]
+                B --> D[DEX Generation]
+                C --> E[Native Libraries]
+                D --> F[APK Assembly]
+                E --> F
+                F --> G[APK Signing]
+                G --> H[Final APK]
+                end
+
+                subgraph "Native Build"
+                C1[C++ Sources] --> C2[CMake Build]
+                C2 --> C3[ARM64 Library]
+                C2 --> C4[ARM32 Library]
+                C3 --> E
+                C4 --> E
+                end
+            </div>
+
+            <h2>Building from Source</h2>
+
+            <h3>Step 1: Clone Repository</h3>
+
+            <pre><code># Clone the repository
+git clone https://github.com/TheRedXStudio-Git/RedBoxVM.git
+cd RedBoxVM
+
+# Initialize submodules
+git submodule update --init --recursive</code></pre>
+
+            <h3>Step 2: Configure Build</h3>
+
+            <p>Edit <code>gradle.properties</code> to configure build settings:</p>
+
+            <pre><code># Build configuration
+android.useAndroidX=true
+android.enableJetifier=true
+
+# Performance optimizations
+org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m
+org.gradle.parallel=true
+org.gradle.caching=true
+org.gradle.configureondemand=true
+
+# NDK configuration
+android.ndkVersion=29.0.13846066
+android.ndkPath=/path/to/ndk
+
+# Signing configuration (for release builds)
+RELEASE_STORE_FILE=release.keystore
+RELEASE_STORE_PASSWORD=your_password
+RELEASE_KEY_ALIAS=redboxvm
+RELEASE_KEY_PASSWORD=your_password</code></pre>
+
+            <h3>Step 3: Build Commands</h3>
+
+            <div class="alert alert-warning">
+                <strong>Build Time:</strong> Initial build may take 15-30 minutes depending on your system
+                specifications.
+            </div>
+
+            <pre><code># Clean build
+./gradlew clean
+
+# Debug build
+./gradlew assembleDebug
+
+# Release build
+./gradlew assembleRelease
+
+# Build specific module
+./gradlew :Core:assembleRelease
+
+# Run tests
+./gradlew test
+
+# Install debug APK
+./gradlew installDebug</code></pre>
+
+            <h2>Native Code Compilation</h2>
+
+            <h3>CMake Configuration</h3>
+
+            <p>The native components use CMake for cross-platform building:</p>
+
+            <pre><code># Core/CMakeLists.txt
+cmake_minimum_required(VERSION 3.22.1)
+project(redboxvm-native)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Architecture-specific optimizations
+if(${ANDROID_ABI} STREQUAL "arm64-v8a")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math")
+elseif(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -mfpu=neon")
+endif()
+
+# Source files
+file(GLOB_RECURSE NATIVE_SOURCES
+    "src/main/cpp/*.cpp"
+    "src/main/cpp/*.c"
+)
+
+# Create shared library
+add_library(redboxvm-native SHARED ${NATIVE_SOURCES})
+
+# Link libraries
+target_link_libraries(redboxvm-native
+    android
+    log
+    dl
+)
+
+# Include directories
+target_include_directories(redboxvm-native PRIVATE
+    src/main/cpp/include
+    src/main/cpp/Dobby/include
+)</code></pre>
+
+            <h3>Architecture Support</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Architecture</th>
+                        <th>ABI</th>
+                        <th>Optimization Level</th>
+                        <th>Binary Size</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ARM64</td>
+                        <td>arm64-v8a</td>
+                        <td>-O3</td>
+                        <td>~8MB</td>
+                    </tr>
+                    <tr>
+                        <td>ARM32</td>
+                        <td>armeabi-v7a</td>
+                        <td>-O2</td>
+                        <td>~6MB</td>
+                    </tr>
+                    <tr>
+                        <td>x86_64</td>
+                        <td>x86_64</td>
+                        <td>-O2</td>
+                        <td>~9MB</td>
+                    </tr>
+                    <tr>
+                        <td>x86</td>
+                        <td>x86</td>
+                        <td>-O1</td>
+                        <td>~7MB</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Build Variants and Flavors</h2>
+
+            <h3>Build Types</h3>
+
+            <pre><code>android {
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "DEBUG_MODE", "true"
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
+        }
+        
+        release {
+            debuggable false
+            minifyEnabled false  // Disabled for BlackReflection compatibility
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "DEBUG_MODE", "false"
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
+        }
+        
+        benchmark {
+            initWith release
+            debuggable false
+            signingConfig signingConfigs.debug
+            buildConfigField "boolean", "BENCHMARK_MODE", "true"
+        }
+    }
+}</code></pre>
+
+            <h3>Product Flavors</h3>
+
+            <pre><code>android {
+    flavorDimensions "version", "architecture"
+    
+    productFlavors {
+        free {
+            dimension "version"
+            applicationIdSuffix ".free"
+            buildConfigField "boolean", "IS_PRO_VERSION", "false"
+        }
+        
+        pro {
+            dimension "version"
+            applicationIdSuffix ".pro"
+            buildConfigField "boolean", "IS_PRO_VERSION", "true"
+        }
+        
+        universal {
+            dimension "architecture"
+            ndk {
+                abiFilters 'arm64-v8a', 'armeabi-v7a'
+            }
+        }
+        
+        arm64 {
+            dimension "architecture"
+            ndk {
+                abiFilters 'arm64-v8a'
+            }
+        }
+    }
+}</code></pre>
+
+            <h2>Testing and Quality Assurance</h2>
+
+            <h3>Test Types</h3>
+
+            <div class="mermaid">
+                graph TB
+                subgraph "Testing Pipeline"
+                UT[Unit Tests]
+                IT[Integration Tests]
+                UI[UI Tests]
+                NT[Native Tests]
+                end
+
+                subgraph "Quality Gates"
+                LC[Lint Checks]
+                SC[Security Scans]
+                PC[Performance Tests]
+                CC[Code Coverage]
+                end
+
+                UT --> LC
+                IT --> SC
+                UI --> PC
+                NT --> CC
+
+                LC --> PASS[Quality Gate Pass]
+                SC --> PASS
+                PC --> PASS
+                CC --> PASS
+            </div>
+
+            <h3>Running Tests</h3>
+
+            <pre><code># Run all tests
+./gradlew test
+
+# Run unit tests only
+./gradlew testDebugUnitTest
+
+# Run instrumented tests
+./gradlew connectedAndroidTest
+
+# Run native tests
+./gradlew :Core:testDebugUnitTest
+
+# Generate test coverage report
+./gradlew jacocoTestReport
+
+# Run lint checks
+./gradlew lint
+
+# Run security analysis
+./gradlew dependencyCheckAnalyze</code></pre>
+
+            <h2>Continuous Integration</h2>
+
+            <h3>GitHub Actions Workflow</h3>
+
+            <pre><code># .github/workflows/build.yml
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+    
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Build with Gradle
+      run: ./gradlew assembleDebug
+    
+    - name: Run tests
+      run: ./gradlew test
+    
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: debug-apk
+        path: app/build/outputs/apk/debug/*.apk</code></pre>
+
+            <h2>Deployment and Distribution</h2>
+
+            <h3>Release Process</h3>
+
+            <div class="mermaid">
+                flowchart TD
+                A[Code Complete] --> B[Version Bump]
+                B --> C[Build Release APK]
+                C --> D[Sign APK]
+                D --> E[Run QA Tests]
+                E --> F{Tests Pass?}
+                F -->|Yes| G[Create Release Tag]
+                F -->|No| H[Fix Issues]
+                H --> C
+                G --> I[Upload to GitHub Releases]
+                I --> J[Update Documentation]
+                J --> K[Notify Users]
+            </div>
+
+            <h3>APK Signing</h3>
+
+            <pre><code># Generate release keystore
+keytool -genkey -v -keystore release.keystore -alias redboxvm -keyalg RSA -keysize 2048 -validity 10000
+
+# Sign APK manually
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore release.keystore app-release-unsigned.apk redboxvm
+
+# Align APK
+zipalign -v 4 app-release-unsigned.apk RedBoxVM-release.apk</code></pre>
+
+            <h2>Troubleshooting Build Issues</h2>
+
+            <h3>Common Problems and Solutions</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Issue</th>
+                        <th>Cause</th>
+                        <th>Solution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>NDK not found</td>
+                        <td>NDK path not configured</td>
+                        <td>Set ANDROID_NDK_HOME environment variable</td>
+                    </tr>
+                    <tr>
+                        <td>Out of memory during build</td>
+                        <td>Insufficient heap space</td>
+                        <td>Increase Gradle JVM args: -Xmx6g</td>
+                    </tr>
+                    <tr>
+                        <td>Native compilation fails</td>
+                        <td>Missing CMake or build tools</td>
+                        <td>Install CMake via SDK Manager</td>
+                    </tr>
+                    <tr>
+                        <td>Signing configuration error</td>
+                        <td>Keystore not found</td>
+                        <td>Generate keystore or update path</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Debug Build Issues</h3>
+
+            <pre><code># Enable verbose logging
+./gradlew assembleDebug --info --stacktrace
+
+# Clean and rebuild
+./gradlew clean build
+
+# Check dependency tree
+./gradlew :app:dependencies
+
+# Verify NDK installation
+./gradlew :Core:externalNativeBuildDebug --info</code></pre>
+
+            <div class="alert alert-success">
+                <strong>Build Success:</strong> After successful build, you'll find the APK in
+                <code>app/build/outputs/apk/</code> directory.
+            </div>
+
+            <!-- Navigation -->
+            <div class="docs-navigation">
+                <a href="security.html" class="docs-nav-btn">
+                    ← Security Guide
+                </a>
+                <a href="examples.html" class="docs-nav-btn">
+                    Examples →
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/docs.js"></script>
+</body>
+
+</html>
