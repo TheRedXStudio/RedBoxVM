@@ -45,7 +45,7 @@ VirtualApp virtualApp = RedBoxCore.createVirtualApp(packageName);
 
 ## Documentation
 
-For detailed documentation, API references, and integration guides, visit our [documentation website](https://theredxstudio-git.github.io/RedBoxVM/).
+For detailed documentation, API references, and integration guides, visit our [documentation website](https://theredxstudio.github.io/RedBoxVM/).
 
 ## Support
 
