@@ -109,128 +109,205 @@
 
             <h2>Core Classes</h2>
 
-            <h3>RedBoxManager</h3>
+            <h3>LazyVMCore</h3>
             
-            <p>The main entry point for all RedBoxVM operations.</p>
+            <p>The main entry point for all RedBoxVM operations and virtualization management.</p>
 
-            <pre><code>public class RedBoxManager {
+            <pre><code>public class LazyVMCore extends ClientConfiguration {
     // Singleton instance
-    public static RedBoxManager getInstance()
+    public static LazyVMCore get()
     
-    // Initialize the virtualization engine
-    public void initialize(Context context)
+    // Get application context
+    public static Context getContext()
     
-    // Create a new virtual environment
-    public VirtualEnvironment createEnvironment(String packageName)
+    // Get package manager
+    public static PackageManager getPackageManager()
     
-    // Launch an app in virtual environment
-    public boolean launchApp(VirtualEnvironment env, String packageName)
+    // Get host package name
+    public static String getHostPkg()
     
-    // Get all virtual environments
-    public List&lt;VirtualEnvironment&gt; getEnvironments()
+    // Get host UID
+    public static int getHostUid()
     
-    // Destroy a virtual environment
-    public void destroyEnvironment(VirtualEnvironment env)
+    // Get host user ID
+    public static int getHostUserId()
+    
+    // Check if services are available
+    public boolean areServicesAvailable()
+    
+    // Get system service binder
+    public IBinder getService(String name)
+    
+    // Enhanced UID management
+    public void setCurrentAppUid(int uid, String packageName)
+    public int getCurrentAppUid()
+    public String getCurrentAppPackage()
+    public boolean isSandboxedEnvironment()
 }</code></pre>
 
             <h4>Usage Example</h4>
 
-            <pre><code>// Initialize RedBoxVM
-RedBoxManager manager = RedBoxManager.getInstance();
-manager.initialize(this);
+            <pre><code>// Get LazyVMCore instance
+LazyVMCore core = LazyVMCore.get();
 
-// Create virtual environment for WhatsApp
-VirtualEnvironment whatsappEnv = manager.createEnvironment("com.whatsapp");
+// Get application context
+Context context = LazyVMCore.getContext();
 
-// Launch WhatsApp in virtual environment
-boolean success = manager.launchApp(whatsappEnv, "com.whatsapp");
+// Get host package information
+String hostPkg = LazyVMCore.getHostPkg();
+int hostUid = LazyVMCore.getHostUid();
 
-if (success) {
-    Log.d("RedBox", "WhatsApp launched successfully in virtual environment");
+// Set current virtual app information
+core.setCurrentAppUid(10123, "com.whatsapp");
+
+// Check if running in sandboxed environment
+if (core.isSandboxedEnvironment()) {
+    Log.d("RedBox", "Running in virtual environment for: " + core.getCurrentAppPackage());
 }</code></pre>
 
-            <h3>VirtualEnvironment</h3>
+            <h3>NativeCore</h3>
             
-            <p>Represents an isolated virtual environment for running apps.</p>
+            <p>Native operations and low-level virtualization controls.</p>
 
-            <pre><code>public class VirtualEnvironment {
-    // Get environment ID
-    public String getId()
+            <pre><code>public class NativeCore {
+    // Initialize native core with API level
+    public static native void init(int apiLevel)
     
-    // Get associated package name
-    public String getPackageName()
+    // Enable I/O redirection
+    public static native void enableIO()
     
-    // Check if environment is active
-    public boolean isActive()
+    // Add I/O redirection rule
+    public static native void addIORule(String targetPath, String relocatePath)
     
-    // Get environment configuration
-    public EnvironmentConfig getConfig()
+    // Hide Xposed framework
+    public static native void hideXposed()
     
-    // Set environment configuration
-    public void setConfig(EnvironmentConfig config)
+    // Disable hidden API restrictions
+    public static native boolean disableHiddenApi()
     
-    // Get virtual file system path
-    public String getVirtualPath()
+    // System properties management
+    public static native void nativeSetProp(String key, String value)
+    public static native String nativeGetProp(String key)
+    public static native void nativeClearProps()
     
-    // Get running processes in this environment
-    public List&lt;ProcessInfo&gt; getProcesses()
+    // Dynamic configuration
+    public static native void setHostPackageName(String packageName)
+    public static native void setVirtualAppInfo(String packageName, int processId, int userId)
+    public static native String getHostPackageName()
+    public static native String getVirtualPackageName()
+    public static native boolean isHostProcess()
+    public static native boolean isVirtualProcess()
+    
+    // Network virtualization
+    public static native void enableNativeSSLBypass(boolean enable)
+    public static native void enableNativeNetworkVirtualization(boolean enable)
+    public static native void setNetworkInterface(String interfaceName, String macAddress, String ipAddress)
+    
+    // Authentication system
+    public static native boolean initializeAuth()
+    public static native boolean setClientLicense(String licenseKey)
+    public static native boolean checkAuthStatus()
+    public static native boolean checkAuthStatusForPackage(String packageName)
 }</code></pre>
 
-            <h3>EnvironmentConfig</h3>
+            <h3>BActivityThread</h3>
             
-            <p>Configuration options for virtual environments.</p>
+            <p>Virtual activity thread management for app lifecycle control.</p>
 
-            <pre><code>public class EnvironmentConfig {
-    // Network isolation settings
-    public boolean networkIsolation = true;
+            <pre><code>public class BActivityThread {
+    // Get current virtual activity thread
+    public static BActivityThread currentActivityThread()
     
-    // File system isolation
-    public boolean fileSystemIsolation = true;
+    // Get application context
+    public Application getApplication()
     
-    // Custom storage path
-    public String customStoragePath = null;
+    // Get system context
+    public Context getSystemContext()
     
-    // Memory limit (MB)
-    public int memoryLimit = 512;
+    // Install virtual application
+    public void installApplication(ApplicationInfo appInfo)
     
-    // Enable debugging
-    public boolean debugMode = false;
+    // Handle virtual app lifecycle
+    public void handleBindApplication(AppBindData data)
     
-    // VPN configuration
-    public VpnConfig vpnConfig = null;
+    // Process virtual app commands
+    public void scheduleTransaction(ClientTransaction transaction)
 }</code></pre>
 
-            <h2>Event Listeners</h2>
+            <h2>Framework Classes</h2>
 
-            <h3>AppListener</h3>
+            <h3>BPackageManager</h3>
             
-            <p>Listen to virtual app lifecycle events.</p>
+            <p>Virtual package manager for handling app installations and queries.</p>
 
-            <pre><code>public interface AppListener {
-    void onAppStarted(String packageName, VirtualEnvironment env);
-    void onAppStopped(String packageName, VirtualEnvironment env);
-    void onAppCrashed(String packageName, VirtualEnvironment env, Exception error);
-    void onEnvironmentCreated(VirtualEnvironment env);
-    void onEnvironmentDestroyed(VirtualEnvironment env);
+            <pre><code>public class BPackageManager {
+    // Get virtual package manager instance
+    public static BPackageManager get()
+    
+    // Install virtual application
+    public InstallResult installPackage(String apkPath, InstallOption option)
+    
+    // Uninstall virtual application
+    public boolean uninstallPackage(String packageName)
+    
+    // Get installed virtual packages
+    public List&lt;PackageInfo&gt; getInstalledPackages(int flags)
+    
+    // Get package information
+    public PackageInfo getPackageInfo(String packageName, int flags)
+    
+    // Get application information
+    public ApplicationInfo getApplicationInfo(String packageName, int flags)
+    
+    // Check if package is installed
+    public boolean isPackageInstalled(String packageName)
+}</code></pre>
+
+            <h3>BUserManager</h3>
+            
+            <p>Virtual user management for multi-user virtualization.</p>
+
+            <pre><code>public class BUserManager {
+    // Get virtual user manager instance
+    public static BUserManager get()
+    
+    // Create virtual user
+    public BUserInfo createUser(String name, int flags)
+    
+    // Remove virtual user
+    public boolean removeUser(int userId)
+    
+    // Get all virtual users
+    public List&lt;BUserInfo&gt; getUsers()
+    
+    // Get current virtual user
+    public BUserInfo getCurrentUser()
+    
+    // Switch to virtual user
+    public boolean switchUser(int userId)
 }</code></pre>
 
             <h4>Implementation Example</h4>
 
-            <pre><code>manager.setAppListener(new AppListener() {
-    @Override
-    public void onAppStarted(String packageName, VirtualEnvironment env) {
-        Log.d("RedBox", "App started: " + packageName + " in env: " + env.getId());
-        // Update UI, send analytics, etc.
-    }
-    
-    @Override
-    public void onAppCrashed(String packageName, VirtualEnvironment env, Exception error) {
-        Log.e("RedBox", "App crashed: " + packageName, error);
-        // Handle crash, show error dialog, etc.
-    }
-    
-    // ... implement other methods
-});</code></pre>
+            <pre><code>// Install virtual app
+BPackageManager pm = BPackageManager.get();
+InstallOption option = new InstallOption();
+option.userId = 0;
+option.installFlags = PackageManager.INSTALL_REPLACE_EXISTING;
+
+InstallResult result = pm.installPackage("/path/to/app.apk", option);
+if (result.isSuccess()) {
+    Log.d("RedBox", "App installed successfully: " + result.packageName);
+} else {
+    Log.e("RedBox", "Installation failed: " + result.error);
+}
+
+// Create virtual user
+BUserManager um = BUserManager.get();
+BUserInfo user = um.createUser("Virtual User 1", 0);
+if (user != null) {
+    Log.d("RedBox", "Created virtual user: " + user.name + " with ID: " + user.id);
+}</code></pre>
 
             <h2>API Flow Diagram</h2>
             
@@ -239,68 +316,96 @@ if (success) {
             <div class="mermaid">
 sequenceDiagram
     participant App as Your App
-    participant Manager as RedBoxManager
-    participant Env as VirtualEnvironment
-    participant Core as Core Engine
+    participant Core as LazyVMCore
+    participant Native as NativeCore
+    participant PM as BPackageManager
+    participant AT as BActivityThread
     
-    App->>Manager: getInstance()
-    App->>Manager: initialize(context)
-    Manager->>Core: Initialize Engine
+    App->>Core: LazyVMCore.get()
+    App->>Native: NativeCore.init(apiLevel)
+    Native->>Native: Initialize Hooks & I/O
     
-    App->>Manager: createEnvironment(packageName)
-    Manager->>Core: Create Virtual Environment
-    Core->>Env: New Environment Created
-    Manager->>App: Return VirtualEnvironment
+    App->>PM: BPackageManager.get()
+    App->>PM: installPackage(apkPath, option)
+    PM->>Native: addIORule(targetPath, relocatePath)
+    PM->>App: Return InstallResult
     
-    App->>Manager: launchApp(env, packageName)
-    Manager->>Core: Launch App in Environment
-    Core->>Env: Start Virtual App Process
-    Env->>Manager: App Started Event
-    Manager->>App: onAppStarted() callback
+    App->>AT: BActivityThread.currentActivityThread()
+    AT->>Native: setVirtualAppInfo(pkg, pid, uid)
+    AT->>Core: Launch Virtual App Process
+    Core->>App: Virtual App Running
             </div>
 
             <h2>Advanced APIs</h2>
 
-            <h3>ProcessManager</h3>
+            <h3>IOCore</h3>
             
-            <p>Advanced process management within virtual environments.</p>
+            <p>File system virtualization and I/O redirection management.</p>
 
-            <pre><code>public class ProcessManager {
-    // Get process manager instance
-    public static ProcessManager getInstance()
+            <pre><code>public class IOCore {
+    // Get IOCore instance
+    public static IOCore get()
     
-    // Kill a specific process
-    public boolean killProcess(VirtualEnvironment env, int pid)
+    // Redirect file path
+    public String redirectPath(String path)
+    public File redirectPath(File path)
     
-    // Get process information
-    public ProcessInfo getProcessInfo(VirtualEnvironment env, int pid)
+    // Add I/O redirection rule
+    public void addRule(String targetPath, String relocatePath)
     
-    // Monitor process resource usage
-    public void startResourceMonitoring(VirtualEnvironment env, ResourceListener listener)
+    // Enable I/O redirection
+    public void enable()
     
-    // Set process priority
-    public void setProcessPriority(VirtualEnvironment env, int pid, int priority)
+    // Get virtual file system root
+    public String getVirtualRoot()
+    
+    // Check if path is redirected
+    public boolean isRedirected(String path)
 }</code></pre>
 
-            <h3>FileSystemManager</h3>
+            <h3>BEnvironment</h3>
             
-            <p>Virtual file system operations.</p>
+            <p>Virtual environment management and configuration.</p>
 
-            <pre><code>public class FileSystemManager {
-    // Copy file between environments
-    public boolean copyFile(VirtualEnvironment source, VirtualEnvironment dest, String path)
+            <pre><code>public class BEnvironment {
+    // Get virtual environment for user
+    public static BEnvironment getVirtualEnvironment(int userId)
     
-    // Get virtual file system usage
-    public StorageInfo getStorageInfo(VirtualEnvironment env)
+    // Get external storage directory
+    public File getExternalStorageDirectory()
     
-    // Clean up temporary files
-    public void cleanupTempFiles(VirtualEnvironment env)
+    // Get data directory for package
+    public File getDataDirectory(String packageName)
     
-    // Export environment data
-    public boolean exportEnvironment(VirtualEnvironment env, String exportPath)
+    // Get cache directory for package
+    public File getCacheDirectory(String packageName)
     
-    // Import environment data
-    public VirtualEnvironment importEnvironment(String importPath)
+    // Get virtual system directory
+    public File getSystemDirectory()
+    
+    // Check if environment is initialized
+    public boolean isInitialized()
+}</code></pre>
+
+            <h3>ServiceManager</h3>
+            
+            <p>Virtual system service management.</p>
+
+            <pre><code>public class ServiceManager {
+    // Get virtual service by name
+    public static IBinder getService(String name)
+    
+    // Add virtual service
+    public static void addService(String name, IBinder service)
+    
+    // Remove virtual service
+    public static void removeService(String name)
+    
+    // List all virtual services
+    public static String[] listServices()
+    
+    // Check if service exists
+    public static boolean checkService(String name)
 }</code></pre>
 
             <h2>Error Handling</h2>
@@ -317,24 +422,24 @@ sequenceDiagram
                 </thead>
                 <tbody>
                     <tr>
-                        <td>VirtualizationException</td>
-                        <td>General virtualization error</td>
-                        <td>Engine not initialized, insufficient permissions</td>
+                        <td>RuntimeException</td>
+                        <td>General runtime error in virtualization</td>
+                        <td>Native core not initialized, hook installation failed</td>
                     </tr>
                     <tr>
-                        <td>EnvironmentException</td>
-                        <td>Virtual environment error</td>
-                        <td>Environment not found, already destroyed</td>
+                        <td>SecurityException</td>
+                        <td>Security or permission error</td>
+                        <td>Insufficient permissions, authentication failed</td>
                     </tr>
                     <tr>
-                        <td>AppLaunchException</td>
-                        <td>App launch failure</td>
-                        <td>App not installed, incompatible app</td>
+                        <td>IllegalStateException</td>
+                        <td>Invalid virtualization state</td>
+                        <td>Services not available, invalid process state</td>
                     </tr>
                     <tr>
-                        <td>ResourceException</td>
-                        <td>Resource allocation error</td>
-                        <td>Insufficient memory, storage full</td>
+                        <td>UnsupportedOperationException</td>
+                        <td>Operation not supported</td>
+                        <td>Unsupported Android version, missing native library</td>
                     </tr>
                 </tbody>
             </table>
@@ -342,98 +447,161 @@ sequenceDiagram
             <h3>Error Handling Example</h3>
 
             <pre><code>try {
-    VirtualEnvironment env = manager.createEnvironment("com.example.app");
-    boolean success = manager.launchApp(env, "com.example.app");
+    // Initialize LazyVM core
+    LazyVMCore core = LazyVMCore.get();
+    NativeCore.init(Build.VERSION.SDK_INT);
     
-    if (!success) {
-        throw new AppLaunchException("Failed to launch app");
+    // Install virtual app
+    BPackageManager pm = BPackageManager.get();
+    InstallResult result = pm.installPackage("/path/to/app.apk", new InstallOption());
+    
+    if (!result.isSuccess()) {
+        throw new RuntimeException("Installation failed: " + result.error);
     }
     
-} catch (VirtualizationException e) {
-    Log.e("RedBox", "Virtualization error", e);
-    // Show user-friendly error message
-    showErrorDialog("Virtualization failed: " + e.getMessage());
+} catch (SecurityException e) {
+    Log.e("RedBox", "Security error", e);
+    // Handle authentication or permission issues
+    if (!NativeCore.checkAuthStatus()) {
+        showAuthenticationDialog();
+    }
     
-} catch (AppLaunchException e) {
-    Log.e("RedBox", "App launch error", e);
-    // Handle app-specific launch issues
-    handleAppLaunchError(e);
+} catch (IllegalStateException e) {
+    Log.e("RedBox", "Invalid state error", e);
+    // Handle service availability issues
+    if (!core.areServicesAvailable()) {
+        showServiceUnavailableMessage();
+    }
     
 } catch (Exception e) {
     Log.e("RedBox", "Unexpected error", e);
     // Handle unexpected errors
-    crashlytics.recordException(e);
+    Slog.e("RedBox", "Critical error in virtualization", e);
 }</code></pre>
 
             <h2>Configuration Options</h2>
 
-            <h3>Global Configuration</h3>
+            <h3>ClientConfiguration</h3>
 
-            <pre><code>public class RedBoxConfig {
-    // Maximum number of concurrent virtual environments
-    public static final int MAX_ENVIRONMENTS = 10;
+            <pre><code>public class ClientConfiguration {
+    // Host package name
+    public String getHostPackageName()
     
-    // Default memory limit per environment (MB)
-    public static final int DEFAULT_MEMORY_LIMIT = 512;
+    // Virtual app package name
+    public String getAppPackageName()
     
-    // Enable performance monitoring
-    public boolean performanceMonitoring = false;
+    // Process type (Main, BlackDaemon, etc.)
+    public ProcessType getProcessType()
     
-    // Log level
-    public LogLevel logLevel = LogLevel.INFO;
+    // Enable debugging features
+    public boolean isDebugMode()
     
-    // Custom hook configurations
-    public Map&lt;String, HookConfig&gt; customHooks = new HashMap&lt;&gt;();
+    // Get configuration for specific package
+    public AppConfig getAppConfig(String packageName)
 }</code></pre>
 
-            <h3>Network Configuration</h3>
+            <h3>InstallOption</h3>
 
-            <pre><code>public class NetworkConfig {
-    // Enable network isolation
-    public boolean isolateNetwork = true;
+            <pre><code>public class InstallOption {
+    // Target user ID for installation
+    public int userId = 0;
     
-    // Custom DNS servers
-    public List&lt;String&gt; dnsServers = Arrays.asList("8.8.8.8", "8.8.4.4");
+    // Installation flags
+    public int installFlags = 0;
     
-    // Proxy configuration
-    public ProxyConfig proxyConfig = null;
+    // Custom data directory
+    public String customDataDir = null;
     
-    // VPN integration
-    public boolean enableVpnIntegration = false;
+    // Enable external storage
+    public boolean enableExternalStorage = true;
     
-    // Network monitoring
-    public boolean monitorNetworkTraffic = false;
+    // Copy APK to virtual environment
+    public boolean copyApk = true;
+    
+    // Skip signature verification
+    public boolean skipVerification = false;
 }</code></pre>
+
+            <h3>System Properties Configuration</h3>
+
+            <pre><code>// Set system property for virtual environment
+NativeCore.nativeSetProp("ro.build.version.release", "13");
+NativeCore.nativeSetProp("ro.product.model", "Virtual Device");
+
+// Get system property
+String androidVersion = NativeCore.nativeGetProp("ro.build.version.release");
+
+// Clear all custom properties
+NativeCore.nativeClearProps();
+
+// Network interface configuration
+NativeCore.setNetworkInterface("wlan0", "02:00:00:00:00:00", "192.168.1.100");
+
+// Enable SSL bypass for debugging
+NativeCore.enableNativeSSLBypass(true);
+
+// Enable network virtualization
+NativeCore.enableNativeNetworkVirtualization(true);</code></pre>
 
             <h2>Performance Monitoring</h2>
 
-            <h3>ResourceMonitor</h3>
+            <h3>StealthMemoryReader</h3>
 
-            <pre><code>public class ResourceMonitor {
-    // Start monitoring resources
-    public void startMonitoring(VirtualEnvironment env, ResourceListener listener)
+            <pre><code>public class StealthMemoryReader {
+    // Initialize stealth memory system
+    public static boolean initialize()
     
-    // Get current resource usage
-    public ResourceUsage getCurrentUsage(VirtualEnvironment env)
+    // Shutdown stealth memory system
+    public static boolean shutdown()
     
-    // Get historical resource data
-    public List&lt;ResourceUsage&gt; getHistoricalData(VirtualEnvironment env, long timeRange)
+    // Check if system is healthy
+    public static boolean isReady()
     
-    // Set resource limits
-    public void setResourceLimits(VirtualEnvironment env, ResourceLimits limits)
+    // Read memory from target process
+    public byte[] readMemory(int pid, long address, int size)
+    
+    // Write memory to target process
+    public boolean writeMemory(int pid, long address, byte[] data)
 }</code></pre>
 
-            <h3>ResourceUsage Data Structure</h3>
+            <h3>Performance Utilities</h3>
 
-            <pre><code>public class ResourceUsage {
-    public long timestamp;
-    public int memoryUsageMB;
-    public float cpuUsagePercent;
-    public long networkBytesIn;
-    public long networkBytesOut;
-    public long storageUsedMB;
-    public int activeProcesses;
-}</code></pre>
+            <pre><code>// Initialize stealth memory system
+if (NativeCore.initializeStealthMemorySystem()) {
+    Log.d("RedBox", "Stealth memory system initialized");
+} else {
+    Log.w("RedBox", "Failed to initialize stealth memory system");
+}
+
+// Check system health
+boolean isHealthy = NativeCore.isStealthMemorySystemHealthy();
+Log.d("RedBox", "Memory system health: " + isHealthy);
+
+// Monitor virtual app performance
+LazyVMCore core = LazyVMCore.get();
+if (core.isSandboxedEnvironment()) {
+    String currentApp = core.getCurrentAppPackage();
+    int currentUid = core.getCurrentAppUid();
+    Log.d("RedBox", "Monitoring app: " + currentApp + " (UID: " + currentUid + ")");
+}
+
+// Shutdown when done
+NativeCore.shutdownStealthMemorySystem();</code></pre>
+
+            <h3>Process Information</h3>
+
+            <pre><code>// Check process type
+if (NativeCore.isHostProcess()) {
+    Log.d("RedBox", "Running in host process");
+} else if (NativeCore.isVirtualProcess()) {
+    Log.d("RedBox", "Running in virtual process");
+    String virtualPkg = NativeCore.getVirtualPackageName();
+    Log.d("RedBox", "Virtual package: " + virtualPkg);
+}
+
+// Get host information
+String hostPkg = NativeCore.getHostPackageName();
+Log.d("RedBox", "Host package: " + hostPkg);</code></pre>
 
             <h2>Integration Patterns</h2>
 
@@ -441,10 +609,12 @@ sequenceDiagram
 
             <pre><code>public class MyRedBoxIntegration {
     private static MyRedBoxIntegration instance;
-    private RedBoxManager redBoxManager;
+    private LazyVMCore lazyVMCore;
     
     private MyRedBoxIntegration() {
-        redBoxManager = RedBoxManager.getInstance();
+        lazyVMCore = LazyVMCore.get();
+        // Initialize native core
+        NativeCore.init(Build.VERSION.SDK_INT);
     }
     
     public static MyRedBoxIntegration getInstance() {
@@ -457,28 +627,91 @@ sequenceDiagram
         }
         return instance;
     }
+    
+    public LazyVMCore getCore() {
+        return lazyVMCore;
+    }
 }</code></pre>
 
-            <h3>Observer Pattern</h3>
+            <h3>Virtual App Management Pattern</h3>
 
-            <pre><code>public class VirtualAppObserver implements AppListener {
-    private List&lt;VirtualAppCallback&gt; callbacks = new ArrayList&lt;&gt;();
+            <pre><code>public class VirtualAppManager {
+    private final LazyVMCore core;
+    private final BPackageManager packageManager;
+    private final Map&lt;String, InstallResult&gt; installedApps;
     
-    public void addCallback(VirtualAppCallback callback) {
-        callbacks.add(callback);
+    public VirtualAppManager() {
+        core = LazyVMCore.get();
+        packageManager = BPackageManager.get();
+        installedApps = new HashMap&lt;&gt;();
     }
     
-    @Override
-    public void onAppStarted(String packageName, VirtualEnvironment env) {
-        for (VirtualAppCallback callback : callbacks) {
-            callback.onVirtualAppEvent(packageName, env, "STARTED");
+    public boolean installApp(String apkPath, String packageName) {
+        try {
+            InstallOption option = new InstallOption();
+            option.userId = 0;
+            option.copyApk = true;
+            
+            InstallResult result = packageManager.installPackage(apkPath, option);
+            if (result.isSuccess()) {
+                installedApps.put(packageName, result);
+                Log.d("RedBox", "Successfully installed: " + packageName);
+                return true;
+            } else {
+                Log.e("RedBox", "Installation failed: " + result.error);
+                return false;
+            }
+        } catch (Exception e) {
+            Log.e("RedBox", "Error installing app: " + packageName, e);
+            return false;
         }
+    }
+    
+    public boolean isAppInstalled(String packageName) {
+        return packageManager.isPackageInstalled(packageName);
+    }
+    
+    public List&lt;PackageInfo&gt; getInstalledApps() {
+        return packageManager.getInstalledPackages(0);
     }
 }</code></pre>
 
             <div class="alert alert-warning">
-                <strong>Thread Safety:</strong> All RedBoxVM APIs are thread-safe, but it's recommended to perform operations on background threads to avoid blocking the UI.
+                <strong>Thread Safety:</strong> LazyVMCore and NativeCore APIs are thread-safe, but package installation and I/O operations should be performed on background threads to avoid blocking the UI.
             </div>
+
+            <h2>Authentication System</h2>
+
+            <h3>License Management</h3>
+
+            <pre><code>// Initialize authentication system
+if (NativeCore.initializeAuth()) {
+    Log.d("RedBox", "Authentication system initialized");
+    
+    // Set client license
+    String licenseKey = "your-license-key-here";
+    if (NativeCore.setClientLicense(licenseKey)) {
+        Log.d("RedBox", "License validated successfully");
+    } else {
+        Log.e("RedBox", "License validation failed");
+    }
+} else {
+    Log.e("RedBox", "Failed to initialize authentication");
+}
+
+// Check authentication status
+boolean isAuthenticated = NativeCore.checkAuthStatus();
+if (isAuthenticated) {
+    Log.d("RedBox", "Client is authenticated");
+} else {
+    Log.w("RedBox", "Client authentication required");
+}
+
+// Check authentication for specific package
+boolean canRunPackage = NativeCore.checkAuthStatusForPackage("com.example.app");
+if (!canRunPackage) {
+    Log.w("RedBox", "Package is not authorized to run");
+}</code></pre>
 
             <!-- Navigation -->
             <div class="docs-navigation">

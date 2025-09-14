@@ -101,7 +101,7 @@
 
             <h1>RedBoxVM Examples</h1>
             
-            <p>This section provides practical examples and code samples for integrating RedBoxVM into your applications. Each example includes complete source code and explanations.</p>
+            <p>This section provides practical examples and code samples for integrating RedBoxVM into your applications using the LazyVM library. Each example includes complete source code and explanations.</p>
 
             <div class="alert alert-info">
                 <strong>Sample Project:</strong> All examples are available in the <a href="https://github.com/TheRedXStudio/RedBoxVM/tree/main/examples">examples directory</a> of the RedBoxVM repository.
@@ -109,13 +109,14 @@
 
             <h2>Basic Integration Example</h2>
 
-            <h3>Simple Virtual App Launcher</h3>
+            <h3>Simple Virtual App Manager</h3>
 
-            <p>This example demonstrates the basic integration of RedBoxVM to create and launch virtual app instances.</p>
+            <p>This example demonstrates the basic integration of RedBoxVM using LazyVM to install and manage virtual app instances.</p>
 
             <pre><code>public class BasicRedBoxExample extends AppCompatActivity {
-    private RedBoxManager redBoxManager;
-    private List&lt;VirtualEnvironment&gt; environments;
+    private LazyVMCore lazyVMCore;
+    private BPackageManager packageManager;
+    private List&lt;PackageInfo&gt; installedApps;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,59 +131,58 @@
     }
     
     private void initializeRedBox() {
-        redBoxManager = RedBoxManager.getInstance();
-        redBoxManager.initialize(this);
-        
-        // Set up event listener
-        redBoxManager.setAppListener(new AppListener() {
-            @Override
-            public void onAppStarted(String packageName, VirtualEnvironment env) {
-                runOnUiThread(() -> {
-                    Toast.makeText(BasicRedBoxExample.this, 
-                        "Virtual app started: " + packageName, 
-                        Toast.LENGTH_SHORT).show();
-                });
+        try {
+            // Get LazyVM core instance
+            lazyVMCore = LazyVMCore.get();
+            
+            // Initialize native core with current API level
+            NativeCore.init(Build.VERSION.SDK_INT);
+            
+            // Initialize authentication system
+            if (NativeCore.initializeAuth()) {
+                Log.d("RedBox", "Authentication system initialized");
+                
+                // Set license key (replace with your actual license)
+                String licenseKey = "your-license-key-here";
+                if (NativeCore.setClientLicense(licenseKey)) {
+                    Log.d("RedBox", "License validated successfully");
+                } else {
+                    Log.w("RedBox", "License validation failed");
+                }
             }
             
-            @Override
-            public void onAppStopped(String packageName, VirtualEnvironment env) {
-                runOnUiThread(() -> {
-                    updateEnvironmentsList();
-                });
+            // Get package manager
+            packageManager = BPackageManager.get();
+            
+            // Enable I/O redirection
+            NativeCore.enableIO();
+            
+            // Hide Xposed framework if needed
+            NativeCore.hideXposed();
+            
+            // Disable hidden API restrictions
+            if (NativeCore.disableHiddenApi()) {
+                Log.d("RedBox", "Hidden API restrictions disabled");
             }
             
-            @Override
-            public void onAppCrashed(String packageName, VirtualEnvironment env, Exception error) {
-                runOnUiThread(() -> {
-                    showErrorDialog("App crashed: " + packageName, error);
-                });
-            }
+            Log.d("RedBox", "RedBoxVM initialized successfully");
             
-            @Override
-            public void onEnvironmentCreated(VirtualEnvironment env) {
-                runOnUiThread(() -> {
-                    updateEnvironmentsList();
-                });
-            }
-            
-            @Override
-            public void onEnvironmentDestroyed(VirtualEnvironment env) {
-                runOnUiThread(() -> {
-                    updateEnvironmentsList();
-                });
-            }
-        });
+        } catch (Exception e) {
+            Log.e("RedBox", "Failed to initialize RedBoxVM", e);
+            showErrorDialog("Initialization failed", e);
+        }
     }
     
     private void setupUI() {
-        Button createEnvButton = findViewById(R.id.btn_create_environment);
+        Button installAppButton = findViewById(R.id.btn_install_app);
         Button launchAppButton = findViewById(R.id.btn_launch_app);
         EditText packageNameInput = findViewById(R.id.et_package_name);
+        EditText apkPathInput = findViewById(R.id.et_apk_path);
         
-        createEnvButton.setOnClickListener(v -> {
-            String packageName = packageNameInput.getText().toString().trim();
-            if (!packageName.isEmpty()) {
-                createVirtualEnvironment(packageName);
+        installAppButton.setOnClickListener(v -> {
+            String apkPath = apkPathInput.getText().toString().trim();
+            if (!apkPath.isEmpty()) {
+                installVirtualApp(apkPath);
             }
         });
         
@@ -193,20 +193,34 @@
             }
         });
         
-        updateEnvironmentsList();
+        updateInstalledAppsList();
     }
     
-    private void createVirtualEnvironment(String packageName) {
+    private void installVirtualApp(String apkPath) {
         new Thread(() -> {
             try {
-                VirtualEnvironment env = redBoxManager.createEnvironment(packageName);
+                // Create install options
+                InstallOption option = new InstallOption();
+                option.userId = 0;
+                option.copyApk = true;
+                option.enableExternalStorage = true;
+                
+                // Install the app
+                InstallResult result = packageManager.installPackage(apkPath, option);
+                
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Environment created for " + packageName, 
-                        Toast.LENGTH_SHORT).show();
+                    if (result.isSuccess()) {
+                        Toast.makeText(this, "App installed: " + result.packageName, 
+                            Toast.LENGTH_SHORT).show();
+                        updateInstalledAppsList();
+                    } else {
+                        showErrorDialog("Installation failed", new Exception(result.error));
+                    }
                 });
+                
             } catch (Exception e) {
                 runOnUiThread(() -> {
-                    showErrorDialog("Failed to create environment", e);
+                    showErrorDialog("Failed to install app", e);
                 });
             }
         }).start();
@@ -215,19 +229,40 @@
     private void launchVirtualApp(String packageName) {
         new Thread(() -> {
             try {
-                // Find existing environment or create new one
-                VirtualEnvironment env = findEnvironmentForPackage(packageName);
-                if (env == null) {
-                    env = redBoxManager.createEnvironment(packageName);
+                // Check if app is installed
+                if (!packageManager.isPackageInstalled(packageName)) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "App not installed: " + packageName, 
+                            Toast.LENGTH_SHORT).show();
+                    });
+                    return;
                 }
                 
-                boolean success = redBoxManager.launchApp(env, packageName);
-                if (!success) {
+                // Get application info
+                ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
+                
+                // Launch the app using BActivityThread
+                BActivityThread activityThread = BActivityThread.currentActivityThread();
+                
+                // Set virtual app info in native core
+                NativeCore.setVirtualAppInfo(packageName, Process.myPid(), Process.myUid());
+                
+                // Create launch intent
+                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
+                if (launchIntent != null) {
+                    startActivity(launchIntent);
+                    
                     runOnUiThread(() -> {
-                        Toast.makeText(this, "Failed to launch " + packageName, 
+                        Toast.makeText(this, "Launched: " + packageName, 
+                            Toast.LENGTH_SHORT).show();
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "No launch activity found for: " + packageName, 
                             Toast.LENGTH_SHORT).show();
                     });
                 }
+                
             } catch (Exception e) {
                 runOnUiThread(() -> {
                     showErrorDialog("Failed to launch app", e);
@@ -236,19 +271,23 @@
         }).start();
     }
     
-    private VirtualEnvironment findEnvironmentForPackage(String packageName) {
-        List&lt;VirtualEnvironment&gt; envs = redBoxManager.getEnvironments();
-        for (VirtualEnvironment env : envs) {
-            if (packageName.equals(env.getPackageName())) {
-                return env;
+    private void updateInstalledAppsList() {
+        new Thread(() -> {
+            try {
+                installedApps = packageManager.getInstalledPackages(0);
+                runOnUiThread(() -> {
+                    // Update UI with installed apps list
+                    updateAppsList();
+                });
+            } catch (Exception e) {
+                Log.e("RedBox", "Failed to get installed apps", e);
             }
-        }
-        return null;
+        }).start();
     }
     
-    private void updateEnvironmentsList() {
-        environments = redBoxManager.getEnvironments();
-        // Update RecyclerView or ListView here
+    private void updateAppsList() {
+        // Update RecyclerView or ListView with installed apps
+        // Implementation depends on your UI structure
     }
     
     private void showErrorDialog(String message, Exception error) {
@@ -262,852 +301,476 @@
 
             <h2>Advanced Configuration Example</h2>
 
-            <h3>Custom Environment Configuration</h3>
+            <h3>Custom I/O Redirection and System Properties</h3>
 
-            <p>This example shows how to create virtual environments with custom configurations for enhanced security and performance.</p>
+            <p>This example shows how to configure I/O redirection rules and system properties for enhanced virtualization.</p>
 
             <pre><code>public class AdvancedConfigExample {
     
-    public VirtualEnvironment createSecureEnvironment(String packageName) {
+    public void setupIORedirection() {
         try {
-            // Create environment with custom configuration
-            VirtualEnvironment env = redBoxManager.createEnvironment(packageName);
+            // Add I/O redirection rules for common paths
+            NativeCore.addIORule("/data/data/com.example.app", 
+                                "/data/data/com.redbox.vm/virtual/com.example.app");
             
-            // Configure security settings
-            EnvironmentConfig config = new EnvironmentConfig();
-            config.networkIsolation = true;
-            config.fileSystemIsolation = true;
-            config.memoryLimit = 1024; // 1GB limit
-            config.debugMode = false;
+            NativeCore.addIORule("/sdcard/Android/data/com.example.app", 
+                                "/data/data/com.redbox.vm/virtual/sdcard/com.example.app");
             
-            // Configure VPN settings
-            VpnConfig vpnConfig = new VpnConfig();
-            vpnConfig.enabled = true;
-            vpnConfig.serverAddress = "vpn.example.com";
-            vpnConfig.protocol = VpnProtocol.OPENVPN;
-            config.vpnConfig = vpnConfig;
+            // Add system directory redirections
+            NativeCore.addIORule("/system/lib", 
+                                "/data/data/com.redbox.vm/virtual/system/lib");
             
-            // Apply configuration
-            env.setConfig(config);
+            // Enable I/O redirection
+            NativeCore.enableIO();
             
-            return env;
+            Log.d("RedBox", "I/O redirection configured successfully");
             
-        } catch (VirtualizationException e) {
-            Log.e("RedBox", "Failed to create secure environment", e);
-            return null;
+        } catch (Exception e) {
+            Log.e("RedBox", "Failed to setup I/O redirection", e);
         }
     }
     
-    public void configureNetworkIsolation(VirtualEnvironment env) {
-        NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.isolateNetwork = true;
-        networkConfig.dnsServers = Arrays.asList("1.1.1.1", "1.0.0.1"); // Cloudflare DNS
-        
-        // Configure proxy
-        ProxyConfig proxyConfig = new ProxyConfig();
-        proxyConfig.enabled = true;
-        proxyConfig.host = "proxy.example.com";
-        proxyConfig.port = 8080;
-        proxyConfig.type = ProxyType.HTTP;
-        networkConfig.proxyConfig = proxyConfig;
-        
-        // Apply network configuration
-        NetworkManager.getInstance().setNetworkConfig(env, networkConfig);
+    public void configureSystemProperties() {
+        try {
+            // Configure device properties for spoofing
+            NativeCore.nativeSetProp("ro.build.version.release", "13");
+            NativeCore.nativeSetProp("ro.build.version.sdk", "33");
+            NativeCore.nativeSetProp("ro.product.model", "Virtual Device");
+            NativeCore.nativeSetProp("ro.product.brand", "RedBox");
+            NativeCore.nativeSetProp("ro.product.manufacturer", "RedBoxVM");
+            
+            // Configure hardware properties
+            NativeCore.nativeSetProp("ro.hardware", "virtual");
+            NativeCore.nativeSetProp("ro.board.platform", "virtual");
+            
+            // Configure security properties
+            NativeCore.nativeSetProp("ro.debuggable", "0");
+            NativeCore.nativeSetProp("ro.secure", "1");
+            
+            Log.d("RedBox", "System properties configured");
+            
+            // Verify properties are set
+            String androidVersion = NativeCore.nativeGetProp("ro.build.version.release");
+            Log.d("RedBox", "Android version set to: " + androidVersion);
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Failed to configure system properties", e);
+        }
     }
     
-    public void setupResourceMonitoring(VirtualEnvironment env) {
-        ResourceMonitor monitor = ResourceMonitor.getInstance();
-        
-        // Set resource limits
-        ResourceLimits limits = new ResourceLimits();
-        limits.maxMemoryMB = 512;
-        limits.maxCpuPercent = 50;
-        limits.maxNetworkBytesPerSecond = 1024 * 1024; // 1MB/s
-        monitor.setResourceLimits(env, limits);
-        
-        // Start monitoring
-        monitor.startMonitoring(env, new ResourceListener() {
-            @Override
-            public void onResourceUsageUpdate(ResourceUsage usage) {
-                Log.d("RedBox", String.format(
-                    "Memory: %dMB, CPU: %.1f%%, Network: %d bytes",
-                    usage.memoryUsageMB, usage.cpuUsagePercent, 
-                    usage.networkBytesIn + usage.networkBytesOut
-                ));
+    public void setupNetworkVirtualization() {
+        try {
+            // Enable network virtualization
+            NativeCore.enableNativeNetworkVirtualization(true);
+            
+            // Configure virtual network interface
+            NativeCore.setNetworkInterface("wlan0", "02:00:00:00:00:00", "192.168.1.100");
+            
+            // Enable SSL bypass for debugging (use carefully)
+            NativeCore.enableNativeSSLBypass(true);
+            
+            Log.d("RedBox", "Network virtualization configured");
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Failed to setup network virtualization", e);
+        }
+    }
+    
+    public void configureVirtualEnvironment(String packageName) {
+        try {
+            // Get virtual environment
+            BEnvironment virtualEnv = BEnvironment.getVirtualEnvironment(0);
+            
+            if (virtualEnv != null && virtualEnv.isInitialized()) {
+                // Get virtual directories
+                File dataDir = virtualEnv.getDataDirectory(packageName);
+                File cacheDir = virtualEnv.getCacheDirectory(packageName);
+                File externalDir = virtualEnv.getExternalStorageDirectory();
                 
-                // Check for resource violations
-                if (usage.memoryUsageMB > limits.maxMemoryMB * 0.9) {
-                    Log.w("RedBox", "Memory usage approaching limit");
+                Log.d("RedBox", "Virtual data directory: " + dataDir.getAbsolutePath());
+                Log.d("RedBox", "Virtual cache directory: " + cacheDir.getAbsolutePath());
+                Log.d("RedBox", "Virtual external storage: " + externalDir.getAbsolutePath());
+                
+                // Ensure directories exist
+                if (!dataDir.exists()) {
+                    dataDir.mkdirs();
                 }
+                if (!cacheDir.exists()) {
+                    cacheDir.mkdirs();
+                }
+                
+            } else {
+                Log.w("RedBox", "Virtual environment not initialized");
             }
             
-            @Override
-            public void onResourceLimitExceeded(String resourceType, long currentValue, long limit) {
-                Log.e("RedBox", String.format(
-                    "Resource limit exceeded: %s = %d (limit: %d)",
-                    resourceType, currentValue, limit
-                ));
-                
-                // Take action (e.g., throttle app, show warning)
-                handleResourceViolation(env, resourceType);
-            }
-        });
-    }
-    
-    private void handleResourceViolation(VirtualEnvironment env, String resourceType) {
-        switch (resourceType) {
-            case "memory":
-                // Reduce memory limit or restart app
-                ProcessManager.getInstance().setProcessPriority(env, 
-                    env.getProcesses().get(0).getPid(), Process.THREAD_PRIORITY_BACKGROUND);
-                break;
-            case "cpu":
-                // Throttle CPU usage
-                ProcessManager.getInstance().throttleProcess(env, 0.5f);
-                break;
-            case "network":
-                // Limit network bandwidth
-                NetworkManager.getInstance().setNetworkThrottle(env, 512 * 1024); // 512KB/s
-                break;
+        } catch (Exception e) {
+            Log.e("RedBox", "Failed to configure virtual environment", e);
         }
     }
 }</code></pre>
 
-            <h2>Multi-Instance Management Example</h2>
+            <h2>Multi-User Virtual Environment Example</h2>
 
-            <h3>Managing Multiple Virtual Apps</h3>
+            <h3>Managing Multiple Virtual Users</h3>
 
-            <p>This example demonstrates how to manage multiple virtual app instances simultaneously.</p>
+            <p>This example demonstrates how to create and manage multiple virtual users for app isolation.</p>
 
             <div class="mermaid">
 graph TB
-    subgraph "Multi-Instance Manager"
-        MM[Manager]
-        ENV1[Environment 1]
-        ENV2[Environment 2]
-        ENV3[Environment 3]
+    subgraph "Virtual User Management"
+        UM[BUserManager]
+        U1[Virtual User 1]
+        U2[Virtual User 2]
+        U3[Virtual User 3]
     end
     
-    subgraph "Virtual Apps"
-        APP1[WhatsApp Clone 1]
-        APP2[WhatsApp Clone 2]
-        APP3[Instagram Clone]
+    subgraph "Virtual Apps per User"
+        A1[App Instance 1]
+        A2[App Instance 2]
+        A3[App Instance 3]
     end
     
-    MM --> ENV1
-    MM --> ENV2
-    MM --> ENV3
+    UM --> U1
+    UM --> U2
+    UM --> U3
     
-    ENV1 --> APP1
-    ENV2 --> APP2
-    ENV3 --> APP3
+    U1 --> A1
+    U2 --> A2
+    U3 --> A3
             </div>
 
-            <pre><code>public class MultiInstanceManager {
-    private Map&lt;String, List&lt;VirtualEnvironment&gt;&gt; packageEnvironments;
-    private ExecutorService executorService;
+            <pre><code>public class MultiUserExample {
+    private BUserManager userManager;
+    private Map&lt;Integer, List&lt;String&gt;&gt; userApps;
     
-    public MultiInstanceManager() {
-        packageEnvironments = new ConcurrentHashMap&lt;&gt;();
-        executorService = Executors.newFixedThreadPool(4);
+    public MultiUserExample() {
+        userManager = BUserManager.get();
+        userApps = new HashMap&lt;&gt;();
     }
     
-    public void createMultipleInstances(String packageName, int count) {
-        List&lt;VirtualEnvironment&gt; environments = new ArrayList&lt;&gt;();
-        
+    public void createVirtualUsers(int count) {
         for (int i = 0; i < count; i++) {
-            final int instanceNumber = i + 1;
-            
-            executorService.submit(() -> {
-                try {
-                    VirtualEnvironment env = redBoxManager.createEnvironment(
-                        packageName + "_instance_" + instanceNumber);
-                    
-                    // Configure each instance with unique settings
-                    EnvironmentConfig config = createInstanceConfig(instanceNumber);
-                    env.setConfig(config);
-                    
-                    synchronized (environments) {
-                        environments.add(env);
-                    }
-                    
-                    Log.d("RedBox", "Created instance " + instanceNumber + " for " + packageName);
-                    
-                } catch (Exception e) {
-                    Log.e("RedBox", "Failed to create instance " + instanceNumber, e);
+            try {
+                String userName = "Virtual User " + (i + 1);
+                BUserInfo user = userManager.createUser(userName, 0);
+                
+                if (user != null) {
+                    Log.d("RedBox", "Created virtual user: " + user.name + " (ID: " + user.id + ")");
+                    userApps.put(user.id, new ArrayList&lt;&gt;());
+                } else {
+                    Log.e("RedBox", "Failed to create virtual user: " + userName);
                 }
-            });
-        }
-        
-        packageEnvironments.put(packageName, environments);
-    }
-    
-    private EnvironmentConfig createInstanceConfig(int instanceNumber) {
-        EnvironmentConfig config = new EnvironmentConfig();
-        
-        // Unique storage path for each instance
-        config.customStoragePath = "/data/data/com.redbox.vm/instances/instance_" + instanceNumber;
-        
-        // Different memory limits based on instance number
-        config.memoryLimit = 256 + (instanceNumber * 128); // 256MB, 384MB, 512MB, etc.
-        
-        // Network isolation with different DNS for each instance
-        config.networkConfig = new NetworkConfig();
-        config.networkConfig.dnsServers = getDnsServersForInstance(instanceNumber);
-        
-        return config;
-    }
-    
-    private List&lt;String&gt; getDnsServersForInstance(int instanceNumber) {
-        switch (instanceNumber % 3) {
-            case 1: return Arrays.asList("8.8.8.8", "8.8.4.4"); // Google DNS
-            case 2: return Arrays.asList("1.1.1.1", "1.0.0.1"); // Cloudflare DNS
-            default: return Arrays.asList("208.67.222.222", "208.67.220.220"); // OpenDNS
-        }
-    }
-    
-    public void launchAllInstances(String packageName) {
-        List&lt;VirtualEnvironment&gt; environments = packageEnvironments.get(packageName);
-        if (environments == null) return;
-        
-        for (VirtualEnvironment env : environments) {
-            executorService.submit(() -> {
-                try {
-                    boolean success = redBoxManager.launchApp(env, packageName);
-                    if (success) {
-                        Log.d("RedBox", "Launched " + packageName + " in environment " + env.getId());
-                    }
-                } catch (Exception e) {
-                    Log.e("RedBox", "Failed to launch app in environment " + env.getId(), e);
-                }
-            });
-        }
-    }
-    
-    public void monitorAllInstances() {
-        for (Map.Entry&lt;String, List&lt;VirtualEnvironment&gt;&gt; entry : packageEnvironments.entrySet()) {
-            String packageName = entry.getKey();
-            List&lt;VirtualEnvironment&gt; environments = entry.getValue();
-            
-            for (VirtualEnvironment env : environments) {
-                ResourceMonitor.getInstance().startMonitoring(env, new ResourceListener() {
-                    @Override
-                    public void onResourceUsageUpdate(ResourceUsage usage) {
-                        // Log resource usage for each instance
-                        Log.d("RedBox", String.format(
-                            "[%s:%s] Memory: %dMB, CPU: %.1f%%",
-                            packageName, env.getId(), usage.memoryUsageMB, usage.cpuUsagePercent
-                        ));
-                    }
-                    
-                    @Override
-                    public void onResourceLimitExceeded(String resourceType, long currentValue, long limit) {
-                        Log.w("RedBox", String.format(
-                            "[%s:%s] Resource limit exceeded: %s",
-                            packageName, env.getId(), resourceType
-                        ));
-                    }
-                });
+                
+            } catch (Exception e) {
+                Log.e("RedBox", "Error creating virtual user " + i, e);
             }
         }
     }
     
-    public void cleanupInstances(String packageName) {
-        List&lt;VirtualEnvironment&gt; environments = packageEnvironments.get(packageName);
-        if (environments == null) return;
-        
-        for (VirtualEnvironment env : environments) {
-            executorService.submit(() -> {
-                try {
-                    redBoxManager.destroyEnvironment(env);
-                    Log.d("RedBox", "Destroyed environment " + env.getId());
-                } catch (Exception e) {
-                    Log.e("RedBox", "Failed to destroy environment " + env.getId(), e);
-                }
-            });
-        }
-        
-        packageEnvironments.remove(packageName);
-    }
-    
-    public void shutdown() {
-        executorService.shutdown();
+    public void installAppForUser(int userId, String apkPath) {
         try {
-            if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
+            // Switch to target user
+            if (userManager.switchUser(userId)) {
+                Log.d("RedBox", "Switched to user: " + userId);
+                
+                // Install app for this user
+                BPackageManager pm = BPackageManager.get();
+                InstallOption option = new InstallOption();
+                option.userId = userId;
+                option.copyApk = true;
+                
+                InstallResult result = pm.installPackage(apkPath, option);
+                
+                if (result.isSuccess()) {
+                    Log.d("RedBox", "App installed for user " + userId + ": " + result.packageName);
+                    
+                    // Track installed app for this user
+                    List&lt;String&gt; apps = userApps.get(userId);
+                    if (apps != null) {
+                        apps.add(result.packageName);
+                    }
+                } else {
+                    Log.e("RedBox", "Installation failed for user " + userId + ": " + result.error);
+                }
+                
+            } else {
+                Log.e("RedBox", "Failed to switch to user: " + userId);
             }
-        } catch (InterruptedException e) {
-            executorService.shutdownNow();
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Error installing app for user " + userId, e);
+        }
+    }
+    
+    public void launchAppForUser(int userId, String packageName) {
+        try {
+            // Switch to target user
+            if (userManager.switchUser(userId)) {
+                Log.d("RedBox", "Switched to user " + userId + " to launch: " + packageName);
+                
+                // Set virtual app info for this user
+                NativeCore.setVirtualAppInfo(packageName, Process.myPid(), userId);
+                
+                // Get virtual environment for this user
+                BEnvironment virtualEnv = BEnvironment.getVirtualEnvironment(userId);
+                
+                if (virtualEnv != null && virtualEnv.isInitialized()) {
+                    // Launch app in virtual environment
+                    BActivityThread activityThread = BActivityThread.currentActivityThread();
+                    
+                    // Create launch intent
+                    Intent launchIntent = new Intent();
+                    launchIntent.setPackage(packageName);
+                    launchIntent.setAction(Intent.ACTION_MAIN);
+                    launchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+                    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    
+                    // Launch the app
+                    LazyVMCore.getContext().startActivity(launchIntent);
+                    
+                    Log.d("RedBox", "Launched " + packageName + " for user " + userId);
+                } else {
+                    Log.e("RedBox", "Virtual environment not available for user: " + userId);
+                }
+                
+            } else {
+                Log.e("RedBox", "Failed to switch to user: " + userId);
+            }
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Error launching app for user " + userId, e);
+        }
+    }
+    
+    public void listUsersAndApps() {
+        try {
+            List&lt;BUserInfo&gt; users = userManager.getUsers();
+            
+            Log.d("RedBox", "=== Virtual Users and Apps ===");
+            for (BUserInfo user : users) {
+                Log.d("RedBox", "User: " + user.name + " (ID: " + user.id + ")");
+                
+                List&lt;String&gt; apps = userApps.get(user.id);
+                if (apps != null && !apps.isEmpty()) {
+                    for (String app : apps) {
+                        Log.d("RedBox", "  - " + app);
+                    }
+                } else {
+                    Log.d("RedBox", "  - No apps installed");
+                }
+            }
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Error listing users and apps", e);
+        }
+    }
+    
+    public void cleanupUser(int userId) {
+        try {
+            // Remove all apps for this user
+            List&lt;String&gt; apps = userApps.get(userId);
+            if (apps != null) {
+                BPackageManager pm = BPackageManager.get();
+                for (String packageName : apps) {
+                    pm.uninstallPackage(packageName);
+                    Log.d("RedBox", "Uninstalled " + packageName + " for user " + userId);
+                }
+            }
+            
+            // Remove the user
+            if (userManager.removeUser(userId)) {
+                Log.d("RedBox", "Removed virtual user: " + userId);
+                userApps.remove(userId);
+            } else {
+                Log.e("RedBox", "Failed to remove virtual user: " + userId);
+            }
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Error cleaning up user " + userId, e);
         }
     }
 }</code></pre>
 
-            <h2>File System Operations Example</h2>
+            <h2>Security and Anti-Detection Example</h2>
 
-            <h3>Virtual File System Management</h3>
+            <h3>Implementing Security Policies and Detection Bypass</h3>
 
-            <p>This example shows how to work with the virtual file system, including data import/export and cleanup operations.</p>
-
-            <pre><code>public class FileSystemExample {
-    
-    public void exportEnvironmentData(VirtualEnvironment env, String exportPath) {
-        FileSystemManager fsManager = FileSystemManager.getInstance();
-        
-        try {
-            // Get storage information
-            StorageInfo storageInfo = fsManager.getStorageInfo(env);
-            Log.d("RedBox", String.format(
-                "Environment storage: %dMB used, %dMB available",
-                storageInfo.usedMB, storageInfo.availableMB
-            ));
-            
-            // Export environment data
-            boolean success = fsManager.exportEnvironment(env, exportPath);
-            if (success) {
-                Log.d("RedBox", "Environment exported to: " + exportPath);
-            } else {
-                Log.e("RedBox", "Failed to export environment");
-            }
-            
-        } catch (Exception e) {
-            Log.e("RedBox", "Export operation failed", e);
-        }
-    }
-    
-    public VirtualEnvironment importEnvironmentData(String importPath) {
-        FileSystemManager fsManager = FileSystemManager.getInstance();
-        
-        try {
-            VirtualEnvironment env = fsManager.importEnvironment(importPath);
-            if (env != null) {
-                Log.d("RedBox", "Environment imported successfully: " + env.getId());
-                return env;
-            } else {
-                Log.e("RedBox", "Failed to import environment");
-                return null;
-            }
-            
-        } catch (Exception e) {
-            Log.e("RedBox", "Import operation failed", e);
-            return null;
-        }
-    }
-    
-    public void copyDataBetweenEnvironments(VirtualEnvironment source, VirtualEnvironment dest, String relativePath) {
-        FileSystemManager fsManager = FileSystemManager.getInstance();
-        
-        try {
-            boolean success = fsManager.copyFile(source, dest, relativePath);
-            if (success) {
-                Log.d("RedBox", "File copied successfully: " + relativePath);
-            } else {
-                Log.e("RedBox", "Failed to copy file: " + relativePath);
-            }
-            
-        } catch (Exception e) {
-            Log.e("RedBox", "Copy operation failed", e);
-        }
-    }
-    
-    public void cleanupEnvironmentStorage(VirtualEnvironment env) {
-        FileSystemManager fsManager = FileSystemManager.getInstance();
-        
-        try {
-            // Clean up temporary files
-            fsManager.cleanupTempFiles(env);
-            
-            // Get updated storage info
-            StorageInfo storageInfo = fsManager.getStorageInfo(env);
-            Log.d("RedBox", String.format(
-                "After cleanup: %dMB used, %dMB freed",
-                storageInfo.usedMB, storageInfo.freedMB
-            ));
-            
-        } catch (Exception e) {
-            Log.e("RedBox", "Cleanup operation failed", e);
-        }
-    }
-    
-    public void monitorFileSystemActivity(VirtualEnvironment env) {
-        // Set up file system monitoring
-        FileSystemMonitor monitor = new FileSystemMonitor(env);
-        
-        monitor.setFileAccessListener(new FileAccessListener() {
-            @Override
-            public void onFileAccessed(String path, FileOperation operation) {
-                Log.d("RedBox", String.format(
-                    "File %s: %s", operation.name(), path
-                ));
-            }
-            
-            @Override
-            public void onFileCreated(String path, long size) {
-                Log.d("RedBox", String.format(
-                    "File created: %s (%d bytes)", path, size
-                ));
-            }
-            
-            @Override
-            public void onFileDeleted(String path) {
-                Log.d("RedBox", "File deleted: " + path);
-            }
-            
-            @Override
-            public void onFileModified(String path, long newSize) {
-                Log.d("RedBox", String.format(
-                    "File modified: %s (new size: %d bytes)", path, newSize
-                ));
-            }
-        });
-        
-        monitor.startMonitoring();
-    }
-}</code></pre>
-
-            <h2>Security Integration Example</h2>
-
-            <h3>Implementing Security Policies</h3>
-
-            <p>This example demonstrates how to implement custom security policies and monitoring.</p>
+            <p>This example demonstrates how to implement security policies and bypass various detection mechanisms.</p>
 
             <pre><code>public class SecurityExample {
     
-    public void setupSecurityPolicies(VirtualEnvironment env, String packageName) {
-        SecurityManager securityManager = SecurityManager.getInstance();
-        
-        // Create security policy
-        SecurityPolicy policy = new SecurityPolicy();
-        policy.packageName = packageName;
-        
-        // Configure permission restrictions
-        policy.permissions.put("android.permission.CAMERA", PermissionAction.DENY);
-        policy.permissions.put("android.permission.RECORD_AUDIO", PermissionAction.DENY);
-        policy.permissions.put("android.permission.ACCESS_FINE_LOCATION", PermissionAction.VIRTUAL);
-        policy.permissions.put("android.permission.READ_CONTACTS", PermissionAction.SANDBOX);
-        
-        // Configure API filters
-        policy.apiFilters.put("TelephonyManager.getDeviceId", "FAKE_DEVICE_ID_12345");
-        policy.apiFilters.put("WifiManager.getMacAddress", "02:00:00:00:00:00");
-        policy.apiFilters.put("Settings.Secure.ANDROID_ID", "virtual_android_id_" + env.getId());
-        
-        // Configure network restrictions
-        policy.networkRestrictions.blockedDomains.addAll(Arrays.asList(
-            "ads.google.com",
-            "facebook.com/tr",
-            "analytics.google.com"
-        ));
-        
-        policy.networkRestrictions.allowedPorts.addAll(Arrays.asList(80, 443, 8080));
-        
-        // Apply security policy
-        securityManager.applySecurityPolicy(env, policy);
-    }
-    
-    public void setupSecurityMonitoring(VirtualEnvironment env) {
-        SecurityMonitor monitor = SecurityMonitor.getInstance();
-        
-        monitor.setSecurityEventListener(env, new SecurityEventListener() {
-            @Override
-            public void onPermissionViolation(String packageName, String permission, String action) {
-                Log.w("RedBox", String.format(
-                    "Permission violation: %s attempted %s on %s",
-                    packageName, action, permission
-                ));
-                
-                // Record security event
-                recordSecurityEvent(SecurityEventType.PERMISSION_VIOLATION, 
-                    packageName, permission, action);
+    public void setupAntiDetection() {
+        try {
+            // Hide Xposed framework
+            NativeCore.hideXposed();
+            Log.d("RedBox", "Xposed framework hidden");
+            
+            // Disable hidden API restrictions
+            if (NativeCore.disableHiddenApi()) {
+                Log.d("RedBox", "Hidden API restrictions disabled");
             }
             
-            @Override
-            public void onSuspiciousActivity(String packageName, String activity, float riskScore) {
-                Log.w("RedBox", String.format(
-                    "Suspicious activity detected: %s - %s (risk: %.2f)",
-                    packageName, activity, riskScore
-                ));
+            // Initialize stealth memory system
+            if (NativeCore.initializeStealthMemorySystem()) {
+                Log.d("RedBox", "Stealth memory system initialized");
+            }
+            
+            // Configure anti-detection properties
+            setupAntiDetectionProperties();
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Failed to setup anti-detection", e);
+        }
+    }
+    
+    private void setupAntiDetectionProperties() {
+        // Hide virtualization indicators
+        NativeCore.nativeSetProp("ro.kernel.qemu", "0");
+        NativeCore.nativeSetProp("ro.hardware", "qcom");
+        NativeCore.nativeSetProp("ro.product.model", "SM-G973F");
+        NativeCore.nativeSetProp("ro.product.brand", "samsung");
+        NativeCore.nativeSetProp("ro.product.manufacturer", "samsung");
+        
+        // Hide debugging indicators
+        NativeCore.nativeSetProp("ro.debuggable", "0");
+        NativeCore.nativeSetProp("ro.secure", "1");
+        NativeCore.nativeSetProp("service.adb.root", "0");
+        
+        // Hide emulator indicators
+        NativeCore.nativeSetProp("ro.build.tags", "release-keys");
+        NativeCore.nativeSetProp("ro.build.type", "user");
+        
+        Log.d("RedBox", "Anti-detection properties configured");
+    }
+    
+    public void configureProcessSecurity(String packageName) {
+        try {
+            // Check authentication status for package
+            if (!NativeCore.checkAuthStatusForPackage(packageName)) {
+                Log.w("RedBox", "Package not authorized: " + packageName);
+                return;
+            }
+            
+            // Set virtual app info with security context
+            int virtualUid = generateVirtualUid(packageName);
+            NativeCore.setVirtualAppInfo(packageName, Process.myPid(), virtualUid);
+            
+            // Configure process isolation
+            LazyVMCore core = LazyVMCore.get();
+            core.setCurrentAppUid(virtualUid, packageName);
+            
+            if (core.isSandboxedEnvironment()) {
+                Log.d("RedBox", "Process running in secure sandbox: " + packageName);
                 
-                if (riskScore > 0.8f) {
-                    // High risk - take immediate action
-                    handleHighRiskActivity(env, packageName, activity);
+                // Apply additional security measures
+                applySecurityPolicies(packageName);
+            }
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Failed to configure process security", e);
+        }
+    }
+    
+    private void applySecurityPolicies(String packageName) {
+        try {
+            // Configure I/O restrictions
+            String virtualDataPath = "/data/data/com.redbox.vm/virtual/" + packageName;
+            NativeCore.addIORule("/data/data/" + packageName, virtualDataPath);
+            
+            // Configure network restrictions if needed
+            if (isNetworkRestrictedApp(packageName)) {
+                NativeCore.enableNativeNetworkVirtualization(true);
+                Log.d("RedBox", "Network virtualization enabled for: " + packageName);
+            }
+            
+            // Configure SSL bypass for debugging (if authorized)
+            if (isDebugAuthorized(packageName)) {
+                NativeCore.enableNativeSSLBypass(true);
+                Log.d("RedBox", "SSL bypass enabled for debugging: " + packageName);
+            }
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Failed to apply security policies", e);
+        }
+    }
+    
+    private int generateVirtualUid(String packageName) {
+        // Generate a virtual UID based on package name
+        // This should be consistent for the same package
+        int hash = packageName.hashCode();
+        // Ensure UID is in application range
+        return Math.abs(hash % 50000) + Process.FIRST_APPLICATION_UID;
+    }
+    
+    private boolean isNetworkRestrictedApp(String packageName) {
+        // Define network-restricted apps
+        String[] restrictedApps = {
+            "com.example.banking",
+            "com.example.payment",
+            "com.example.secure"
+        };
+        
+        for (String app : restrictedApps) {
+            if (packageName.equals(app)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isDebugAuthorized(String packageName) {
+        // Check if debugging is authorized for this package
+        // This should be based on your security policy
+        return NativeCore.checkAuthStatusForPackage(packageName + ".debug");
+    }
+    
+    public void monitorSecurityEvents() {
+        try {
+            // Monitor process state
+            if (NativeCore.isVirtualProcess()) {
+                String virtualPkg = NativeCore.getVirtualPackageName();
+                Log.d("RedBox", "Monitoring virtual process: " + virtualPkg);
+                
+                // Check stealth memory system health
+                if (NativeCore.isStealthMemorySystemHealthy()) {
+                    Log.d("RedBox", "Stealth memory system is healthy");
+                } else {
+                    Log.w("RedBox", "Stealth memory system health check failed");
                 }
             }
             
-            @Override
-            public void onNetworkViolation(String packageName, String domain, String reason) {
-                Log.w("RedBox", String.format(
-                    "Network violation: %s attempted to access %s (%s)",
-                    packageName, domain, reason
-                ));
-                
-                // Block the network request
-                NetworkManager.getInstance().blockDomain(env, domain);
+            // Monitor authentication status
+            boolean authStatus = NativeCore.checkAuthStatus();
+            Log.d("RedBox", "Authentication status: " + (authStatus ? "Valid" : "Invalid"));
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Error monitoring security events", e);
+        }
+    }
+    
+    public void cleanup() {
+        try {
+            // Clear custom properties
+            NativeCore.nativeClearProps();
+            
+            // Shutdown stealth memory system
+            if (NativeCore.shutdownStealthMemorySystem()) {
+                Log.d("RedBox", "Stealth memory system shutdown successfully");
             }
             
-            @Override
-            public void onFileSystemViolation(String packageName, String path, String operation) {
-                Log.w("RedBox", String.format(
-                    "File system violation: %s attempted %s on %s",
-                    packageName, operation, path
-                ));
-                
-                // Restrict file access
-                FileSystemManager.getInstance().restrictPath(env, path);
-            }
-        });
-        
-        monitor.startMonitoring(env);
-    }
-    
-    private void handleHighRiskActivity(VirtualEnvironment env, String packageName, String activity) {
-        // Implement risk mitigation strategies
-        switch (activity) {
-            case "PRIVILEGE_ESCALATION_ATTEMPT":
-                // Immediately terminate the app
-                ProcessManager.getInstance().killAllProcesses(env);
-                break;
-                
-            case "DATA_EXFILTRATION_ATTEMPT":
-                // Block all network access
-                NetworkManager.getInstance().blockAllTraffic(env);
-                break;
-                
-            case "MALWARE_SIGNATURE_DETECTED":
-                // Quarantine the environment
-                SecurityManager.getInstance().quarantineEnvironment(env);
-                break;
-                
-            default:
-                // Apply general restrictions
-                applyRestrictivePolicy(env);
-                break;
-        }
-    }
-    
-    private void applyRestrictivePolicy(VirtualEnvironment env) {
-        SecurityPolicy restrictivePolicy = new SecurityPolicy();
-        
-        // Deny all sensitive permissions
-        restrictivePolicy.permissions.put("android.permission.CAMERA", PermissionAction.DENY);
-        restrictivePolicy.permissions.put("android.permission.RECORD_AUDIO", PermissionAction.DENY);
-        restrictivePolicy.permissions.put("android.permission.ACCESS_FINE_LOCATION", PermissionAction.DENY);
-        restrictivePolicy.permissions.put("android.permission.READ_CONTACTS", PermissionAction.DENY);
-        restrictivePolicy.permissions.put("android.permission.WRITE_EXTERNAL_STORAGE", PermissionAction.DENY);
-        
-        // Block all network access except essential services
-        restrictivePolicy.networkRestrictions.defaultAction = NetworkAction.BLOCK;
-        restrictivePolicy.networkRestrictions.allowedDomains.addAll(Arrays.asList(
-            "google.com",
-            "googleapis.com"
-        ));
-        
-        SecurityManager.getInstance().applySecurityPolicy(env, restrictivePolicy);
-    }
-    
-    private void recordSecurityEvent(SecurityEventType type, String packageName, String details, String action) {
-        SecurityEvent event = new SecurityEvent();
-        event.timestamp = System.currentTimeMillis();
-        event.type = type;
-        event.packageName = packageName;
-        event.details = details;
-        event.action = action;
-        event.severity = calculateSeverity(type);
-        
-        // Store in security audit log
-        SecurityAuditLogger.getInstance().logEvent(event);
-        
-        // Send to security monitoring system if configured
-        if (SecurityConfig.getInstance().isRemoteMonitoringEnabled()) {
-            SecurityReporter.getInstance().reportEvent(event);
-        }
-    }
-    
-    private SecuritySeverity calculateSeverity(SecurityEventType type) {
-        switch (type) {
-            case PERMISSION_VIOLATION:
-                return SecuritySeverity.MEDIUM;
-            case NETWORK_VIOLATION:
-                return SecuritySeverity.LOW;
-            case PRIVILEGE_ESCALATION:
-                return SecuritySeverity.HIGH;
-            case MALWARE_DETECTED:
-                return SecuritySeverity.CRITICAL;
-            default:
-                return SecuritySeverity.LOW;
+            // Disable SSL bypass
+            NativeCore.enableNativeSSLBypass(false);
+            
+            // Disable network virtualization
+            NativeCore.enableNativeNetworkVirtualization(false);
+            
+            Log.d("RedBox", "Security cleanup completed");
+            
+        } catch (Exception e) {
+            Log.e("RedBox", "Error during security cleanup", e);
         }
     }
 }</code></pre>
-
-            <h2>Performance Optimization Example</h2>
-
-            <h3>Optimizing Virtual App Performance</h3>
-
-            <p>This example shows how to optimize performance for virtual apps through resource management and caching strategies.</p>
-
-            <div class="mermaid">
-graph TB
-    subgraph "Performance Optimization"
-        PO[Performance Optimizer]
-        RM[Resource Manager]
-        CM[Cache Manager]
-        MM[Memory Manager]
-    end
-    
-    subgraph "Optimization Strategies"
-        LC[Lazy Loading]
-        CP[Connection Pooling]
-        MC[Memory Caching]
-        BG[Background Processing]
-    end
-    
-    PO --> RM
-    PO --> CM
-    PO --> MM
-    
-    RM --> LC
-    CM --> CP
-    MM --> MC
-    PO --> BG
-            </div>
-
-            <pre><code>public class PerformanceOptimizationExample {
-    
-    public void optimizeEnvironmentPerformance(VirtualEnvironment env) {
-        PerformanceOptimizer optimizer = PerformanceOptimizer.getInstance();
-        
-        // Configure performance settings
-        PerformanceConfig config = new PerformanceConfig();
-        config.enableLazyLoading = true;
-        config.enableMemoryPooling = true;
-        config.enableConnectionPooling = true;
-        config.maxConcurrentOperations = 4;
-        config.cacheSize = 128 * 1024 * 1024; // 128MB cache
-        
-        optimizer.applyConfiguration(env, config);
-        
-        // Setup performance monitoring
-        setupPerformanceMonitoring(env);
-        
-        // Optimize memory usage
-        optimizeMemoryUsage(env);
-        
-        // Optimize I/O operations
-        optimizeIOOperations(env);
-    }
-    
-    private void setupPerformanceMonitoring(VirtualEnvironment env) {
-        PerformanceMonitor monitor = PerformanceMonitor.getInstance();
-        
-        monitor.setPerformanceListener(env, new PerformanceListener() {
-            @Override
-            public void onPerformanceMetricsUpdate(PerformanceMetrics metrics) {
-                // Log performance metrics
-                Log.d("RedBox", String.format(
-                    "Performance: CPU=%.1f%%, Memory=%dMB, I/O=%d ops/s",
-                    metrics.cpuUsage, metrics.memoryUsageMB, metrics.ioOperationsPerSecond
-                ));
-                
-                // Check for performance issues
-                if (metrics.cpuUsage > 80.0f) {
-                    handleHighCpuUsage(env, metrics);
-                }
-                
-                if (metrics.memoryUsageMB > 800) {
-                    handleHighMemoryUsage(env, metrics);
-                }
-            }
-            
-            @Override
-            public void onPerformanceBottleneck(String component, float impact) {
-                Log.w("RedBox", String.format(
-                    "Performance bottleneck detected: %s (impact: %.1f%%)",
-                    component, impact * 100
-                ));
-                
-                // Apply optimization for specific component
-                optimizeComponent(env, component);
-            }
-        });
-        
-        monitor.startMonitoring(env);
-    }
-    
-    private void optimizeMemoryUsage(VirtualEnvironment env) {
-        MemoryOptimizer memOptimizer = MemoryOptimizer.getInstance();
-        
-        // Configure memory pools
-        MemoryPoolConfig poolConfig = new MemoryPoolConfig();
-        poolConfig.smallObjectPoolSize = 1024;
-        poolConfig.mediumObjectPoolSize = 256;
-        poolConfig.largeObjectPoolSize = 64;
-        poolConfig.enableGarbageCollectionOptimization = true;
-        
-        memOptimizer.configureMemoryPools(env, poolConfig);
-        
-        // Setup memory pressure handling
-        memOptimizer.setMemoryPressureHandler(env, new MemoryPressureHandler() {
-            @Override
-            public void onLowMemory(long availableMemory, long totalMemory) {
-                Log.w("RedBox", String.format(
-                    "Low memory condition: %dMB available of %dMB total",
-                    availableMemory / (1024 * 1024), totalMemory / (1024 * 1024)
-                ));
-                
-                // Free up memory
-                freeUnusedMemory(env);
-            }
-            
-            @Override
-            public void onMemoryPressure(MemoryPressureLevel level) {
-                switch (level) {
-                    case LOW:
-                        // Clear caches
-                        CacheManager.getInstance().clearLeastRecentlyUsed(env, 0.25f);
-                        break;
-                    case MEDIUM:
-                        // More aggressive cleanup
-                        CacheManager.getInstance().clearLeastRecentlyUsed(env, 0.5f);
-                        System.gc();
-                        break;
-                    case HIGH:
-                        // Emergency cleanup
-                        CacheManager.getInstance().clearAll(env);
-                        freeAllNonEssentialMemory(env);
-                        System.gc();
-                        break;
-                }
-            }
-        });
-    }
-    
-    private void optimizeIOOperations(VirtualEnvironment env) {
-        IOOptimizer ioOptimizer = IOOptimizer.getInstance();
-        
-        // Configure I/O optimization
-        IOConfig ioConfig = new IOConfig();
-        ioConfig.enableAsyncIO = true;
-        ioConfig.ioThreadPoolSize = 4;
-        ioConfig.readBufferSize = 64 * 1024; // 64KB
-        ioConfig.writeBufferSize = 64 * 1024; // 64KB
-        ioConfig.enableIOCaching = true;
-        ioConfig.cacheSize = 32 * 1024 * 1024; // 32MB
-        
-        ioOptimizer.applyConfiguration(env, ioConfig);
-        
-        // Setup I/O monitoring
-        ioOptimizer.setIOMonitor(env, new IOMonitor() {
-            @Override
-            public void onIOOperationCompleted(IOOperation operation, long duration) {
-                if (duration > 1000) { // Log slow operations (>1s)
-                    Log.w("RedBox", String.format(
-                        "Slow I/O operation: %s took %dms",
-                        operation.getType(), duration
-                    ));
-                }
-            }
-            
-            @Override
-            public void onIOBottleneck(String path, float utilizationPercent) {
-                Log.w("RedBox", String.format(
-                    "I/O bottleneck on %s: %.1f%% utilization",
-                    path, utilizationPercent
-                ));
-                
-                // Optimize I/O for this path
-                optimizePathIO(env, path);
-            }
-        });
-    }
-    
-    private void handleHighCpuUsage(VirtualEnvironment env, PerformanceMetrics metrics) {
-        // Reduce CPU-intensive operations
-        ProcessManager processManager = ProcessManager.getInstance();
-        
-        // Lower process priority
-        List&lt;ProcessInfo&gt; processes = env.getProcesses();
-        for (ProcessInfo process : processes) {
-            processManager.setProcessPriority(env, process.getPid(), 
-                Process.THREAD_PRIORITY_BACKGROUND);
-        }
-        
-        // Enable CPU throttling
-        processManager.enableCpuThrottling(env, 0.7f); // Limit to 70% CPU
-    }
-    
-    private void handleHighMemoryUsage(VirtualEnvironment env, PerformanceMetrics metrics) {
-        // Aggressive memory cleanup
-        CacheManager.getInstance().clearAll(env);
-        
-        // Force garbage collection
-        System.gc();
-        
-        // Reduce memory limits
-        EnvironmentConfig config = env.getConfig();
-        config.memoryLimit = Math.max(256, config.memoryLimit - 128); // Reduce by 128MB
-        env.setConfig(config);
-    }
-    
-    private void optimizeComponent(VirtualEnvironment env, String component) {
-        switch (component) {
-            case "network":
-                optimizeNetworkPerformance(env);
-                break;
-            case "storage":
-                optimizeStoragePerformance(env);
-                break;
-            case "graphics":
-                optimizeGraphicsPerformance(env);
-                break;
-            default:
-                Log.w("RedBox", "Unknown component for optimization: " + component);
-                break;
-        }
-    }
-    
-    private void optimizeNetworkPerformance(VirtualEnvironment env) {
-        NetworkOptimizer netOptimizer = NetworkOptimizer.getInstance();
-        
-        // Enable connection pooling
-        netOptimizer.enableConnectionPooling(env, true);
-        
-        // Configure request batching
-        netOptimizer.enableRequestBatching(env, true);
-        
-        // Enable compression
-        netOptimizer.enableCompression(env, true);
-    }
-    
-    private void optimizeStoragePerformance(VirtualEnvironment env) {
-        StorageOptimizer storageOptimizer = StorageOptimizer.getInstance();
-        
-        // Enable write coalescing
-        storageOptimizer.enableWriteCoalescing(env, true);
-        
-        // Increase buffer sizes
-        storageOptimizer.setBufferSize(env, 128 * 1024); // 128KB
-        
-        // Enable background defragmentation
-        storageOptimizer.enableDefragmentation(env, true);
-    }
-    
-    private void optimizeGraphicsPerformance(VirtualEnvironment env) {
-        GraphicsOptimizer gfxOptimizer = GraphicsOptimizer.getInstance();
-        
-        // Reduce rendering quality
-        gfxOptimizer.setRenderingQuality(env, RenderingQuality.MEDIUM);
-        
-        // Enable frame rate limiting
-        gfxOptimizer.setMaxFrameRate(env, 30); // Limit to 30 FPS
-        
-        // Enable GPU acceleration if available
-        if (gfxOptimizer.isGpuAccelerationAvailable()) {
-            gfxOptimizer.enableGpuAcceleration(env, true);
-        }
-    }
-}</code></pre>
-
-            <div class="alert alert-success">
-                <strong>Example Repository:</strong> Find complete, runnable examples in our <a href="https://github.com/TheRedXStudio/RedBoxVM/tree/main/examples">GitHub repository</a>.
-            </div>
 
             <!-- Navigation -->
             <div class="docs-navigation">
